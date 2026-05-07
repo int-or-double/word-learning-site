@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренировка - TrainingCards</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+		<nav class="navbar">
+			<div class="nav-brand">TrainingCards</div>
+			
+			<!-- Обычное меню для десктопа -->
+			<div class="nav-links" id="navLinks">
+				<a href="/">Главная</a>
+				<a href="/training">Тренировка</a>
+				<a href="/about">О нас</a>
+				<a href="/contact">Контакты</a>
+				<a href="/login" class="btn-universal btn-template-1">Войти</a>
+				<a href="/register" class="btn-universal btn-template-2">Регистрация</a>
+			</div>
+			
+			<!-- Бургер-меню для мобильных -->
+			<div class="burger-menu" id="burgerMenu">
+				<div class="burger-line"></div>
+				<div class="burger-line"></div>
+				<div class="burger-line"></div>
+			</div>
+		</nav>
+	</header>
+
+
+
+
+    <main>
+        <section class="training-area">
+            <h1>Тренировка карточек</h1>
+            
+            <div class="training-stats">
+                <div class="stat">Карточек: <span id="total-cards"><%= cards.length %></span></div>
+                <div class="stat">Пройдено: <span id="completed">0</span></div>
+                <div class="stat">Осталось: <span id="remaining"><%= cards.length %></span></div>
+            </div>
+
+            <div class="card-container">
+                <% if (cards.length > 0) { %>
+                <div class="flip-card" id="current-card">
+                    <div class="flip-card-inner" id="card-inner">
+                        <div class="flip-card-front">
+                            <h3 id="card-front"><%= cards[0].front %></h3>
+                        </div>
+                        <div class="flip-card-back">
+                            <p class="explanation">Объяснение: <%= cards[0].back %></p>
+                            <% if (cards[0].note) { %>
+                            <p class="note">Справка: <%= cards[0].note %></p>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <% } else { %>
+                <p>Нет карточек для тренировки</p>
+                <% } %>
+            </div>
+
+            <div class="training-controls">
+				<button class="btn-universal btn-template-2 training-btn" onclick="nextCard()">
+					Следующая карточка
+				</button>
+			</div>
+
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 TrainingCards. Все права защищены.</p>
+            <div class="footer-links">
+                <a href="/about">О нас</a>
+                <a href="/contact">Контакты</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/main.js"></script>
+	<script>
+		let currentCardIndex = 0;
+		let cards = <%- JSON.stringify(cards) %>;
+		let completedCount = 0;
+		let autoFlipTimer = null;
+
+		// Функция перехода к следующей карточке
+		function nextCard() {
+			if (cards.length === 0) return;
+			
+			currentCardIndex++;
+			completedCount++;
+			
+			// Обновляем статистику
+			document.getElementById('completed').textContent = completedCount;
+			document.getElementById('remaining').textContent = cards.length - completedCount;
+			
+			// Если прошли все карточки, начинаем заново
+			if (currentCardIndex >= cards.length) {
+				currentCardIndex = 0;
+				completedCount = 0;
+				document.getElementById('completed').textContent = '0';
+				document.getElementById('remaining').textContent = cards.length;
+			}
+			
+			updateCard();
+		}
+
+		// Функция обновления содержимого карточки
+		function updateCard() {
+			if (cards.length === 0) return;
+			
+			const cardFront = document.getElementById('card-front');
+			const cardInner = document.getElementById('card-inner');
+			const explanation = cardInner.querySelector('.explanation');
+			const note = cardInner.querySelector('.note');
+			
+			if (cards[currentCardIndex]) {
+				cardFront.textContent = cards[currentCardIndex].front;
+				explanation.textContent = 'Объяснение: ' + cards[currentCardIndex].back;
+				
+				if (note) {
+					if (cards[currentCardIndex].note) {
+						note.textContent = 'Справка: ' + cards[currentCardIndex].note;
+						note.style.display = 'block';
+					} else {
+						note.style.display = 'none';
+					}
+				}
+				
+				// РЕШЕНИЕ: Принудительно сбрасываем transform и класс
+				resetCardToFront(cardInner);
+			}
+		}
+
+		// Функция сброса карточки на лицевую сторону
+		function resetCardToFront(cardInner) {
+			if (cardInner) {
+				// Принудительно сбрасываем все стили трансформации
+				cardInner.style.transform = 'rotateY(0deg)';
+				cardInner.classList.remove('flipped');
+				
+				// Очищаем таймер
+				if (autoFlipTimer) {
+					clearTimeout(autoFlipTimer);
+					autoFlipTimer = null;
+				}
+			}
+		}
+
+		// Функция переворота карточки
+		function flipCard() {
+			const cardInner = document.getElementById('card-inner');
+			if (cardInner) {
+				// Проверяем текущее состояние через transform
+				const currentTransform = cardInner.style.transform;
+				if (currentTransform === 'rotateY(180deg)') {
+					// Переворачиваем на лицевую сторону
+					cardInner.style.transform = 'rotateY(0deg)';
+					cardInner.classList.remove('flipped');
+				} else {
+					// Переворачиваем на обратную сторону
+					cardInner.style.transform = 'rotateY(180deg)';
+					cardInner.classList.add('flipped');
+					
+					// Автоматический переворот через 8 секунд
+					if (autoFlipTimer) clearTimeout(autoFlipTimer);
+					autoFlipTimer = setTimeout(() => {
+						cardInner.style.transform = 'rotateY(0deg)';
+						cardInner.classList.remove('flipped');
+					}, 8000);
+				}
+			}
+		}
+
+		// Инициализация после загрузки страницы
+		document.addEventListener('DOMContentLoaded', function() {
+			const card = document.getElementById('current-card');
+			
+			if (card) {
+				// Добавляем обработчик клика по карточке
+				card.addEventListener('click', function() {
+					flipCard();
+				});
+			}
+			
+			// Убедимся, что первая карточка показывается лицевой стороной
+			const cardInner = document.getElementById('card-inner');
+			if (cardInner) {
+				resetCardToFront(cardInner);
+			}
+		});
+	</script>
+	<script src="/js/burger.js"></script>
+
+
+
+
+
+
+
+</body>
+</html>

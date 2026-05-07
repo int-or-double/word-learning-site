@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация - TrainingCards</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+		<nav class="navbar">
+			<div class="nav-brand">TrainingCards</div>
+			
+			<!-- Обычное меню для десктопа -->
+			<div class="nav-links" id="navLinks">
+				<a href="/">Главная</a>
+				<a href="/training">Тренировка</a>
+				<a href="/about">О нас</a>
+				<a href="/contact">Контакты</a>
+				<a href="/login" class="btn-universal btn-template-1">Войти</a>
+				<a href="/register" class="btn-universal btn-template-2">Регистрация</a>
+			</div>
+			
+			<!-- Бургер-меню для мобильных -->
+			<div class="burger-menu" id="burgerMenu">
+				<div class="burger-line"></div>
+				<div class="burger-line"></div>
+				<div class="burger-line"></div>
+			</div>
+		</nav>
+	</header>
+
+
+
+    <main>
+        <section class="about-page">
+            <div class="container">
+                <h1>Регистрация</h1>
+                
+                <div class="about-content">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <h2>🌟 Присоединяйтесь к TrainingCards!</h2>
+                            <p>Создайте аккаунт и начните эффективное обучение уже сегодня</p>
+                        </div>
+                        
+                        <form id="register-form" class="auth-form">
+                            <div class="form-group">
+                                <label for="username">Имя пользователя:</label>
+                                <input type="text" id="username" name="username" required placeholder="Выберите имя пользователя">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email:</label>
+                                <input type="email" id="email" name="email" required placeholder="Введите ваш email">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Пароль:</label>
+                                <input type="password" id="password" name="password" required placeholder="Создайте надежный пароль">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password_confirm">Подтвердите пароль:</label>
+                                <input type="password" id="password_confirm" name="password_confirm" required placeholder="Повторите пароль">
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn-universal btn-template-1 btn-large">
+                                    Создать аккаунт
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="auth-footer">
+                            <p>Уже есть аккаунт? <a href="/login" class="auth-link">Войти в систему</a></p>
+                            <p><a href="/" class="auth-link">← Вернуться на главную</a></p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefits-section">
+                        <h2>Почему стоит зарегистрироваться в TrainingCards?</h2>
+                        <div class="benefits-grid">
+                            <div class="benefit-item">
+                                <h3>🔒 Персональное хранилище</h3>
+                                <p>Создавайте и храните свои собственные наборы карточек в личном кабинете</p>
+                            </div>
+                            <div class="benefit-item">
+                                <h3>📊 Система прогресса</h3>
+                                <p>Отслеживайте свой учебный прогресс и статистику эффективности</p>
+                            </div>
+                            <div class="benefit-item">
+                                <h3>🔄 Интервальное повторение</h3>
+                                <p>Интеллектуальная система напоминаний для долгосрочного запоминания</p>
+                            </div>
+                            <div class="benefit-item">
+                                <h3>📱 Синхронизация</h3>
+                                <p>Доступ к вашим карточкам с любого устройства в любое время</p>
+                            </div>
+                            <div class="benefit-item">
+                                <h3>🏆 Достижения</h3>
+                                <p>Получайте награды и открывайте новые возможности по мере обучения</p>
+                            </div>
+                            <div class="benefit-item">
+                                <h3>👥 Сообщество</h3>
+                                <p>Делитесь своими наборами карточек и используйте материалы других пользователей</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 TrainingCards. Все права защищены.</p>
+            <div class="footer-links">
+                <a href="/about">О нас</a>
+                <a href="/contact">Контакты</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const registerForm = document.querySelector('#register-form');
+            if (registerForm) {
+                registerForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const data = Object.fromEntries(formData);
+                    
+                    // Проверка совпадения паролей
+                    if (data.password !== data.password_confirm) {
+                        alert('Пароли не совпадают!');
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch('/api/register', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                username: data.username,
+                                email: data.email,
+                                password: data.password
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            alert(result.message);
+                            window.location.href = '/login';
+                        } else {
+                            alert(result.message);
+                        }
+                    } catch (error) {
+                        console.error('Ошибка:', error);
+                        alert('Произошла ошибка при регистрации');
+                    }
+                });
+            }
+        });
+    </script>
+	<script src="/js/burger.js"></script>
+
+</body>
+</html>

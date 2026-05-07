@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход - TrainingCards</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <header>
+		<nav class="navbar">
+			<div class="nav-brand">TrainingCards</div>
+			
+			<!-- Обычное меню для десктопа -->
+			<div class="nav-links" id="navLinks">
+				<a href="/">Главная</a>
+				<a href="/training">Тренировка</a>
+				<a href="/about">О нас</a>
+				<a href="/contact">Контакты</a>
+				<a href="/login" class="btn-universal btn-template-1">Войти</a>
+				<a href="/register" class="btn-universal btn-template-2">Регистрация</a>
+			</div>
+			
+			<!-- Бургер-меню для мобильных -->
+			<div class="burger-menu" id="burgerMenu">
+				<div class="burger-line"></div>
+				<div class="burger-line"></div>
+				<div class="burger-line"></div>
+			</div>
+		</nav>
+	</header>
+
+
+
+    <main>
+        <section class="about-page">
+            <div class="container">
+                <h1>Вход в систему</h1>
+                
+                <div class="about-content">
+                    <div class="auth-card">
+                        <div class="auth-header">
+                            <h2>👋 Добро пожаловать обратно!</h2>
+                            <p>Введите свои учетные данные для продолжения обучения</p>
+                        </div>
+                        
+                        <form id="login-form" class="auth-form">
+                            <div class="form-group">
+                                <label for="username">Имя пользователя:</label>
+                                <input type="text" id="username" name="username" required placeholder="Введите ваше имя пользователя">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="password">Пароль:</label>
+                                <input type="password" id="password" name="password" required placeholder="Введите ваш пароль">
+                            </div>
+                            
+                            <div class="form-actions">
+                                <button type="submit" class="btn-universal btn-template-1 btn-large">
+                                    Войти в аккаунт
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="auth-footer">
+                            <p>Еще не зарегистрированы? <a href="/register" class="auth-link">Создать аккаунт</a></p>
+                            <p><a href="/" class="auth-link">← Вернуться на главную</a></p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefits-section">
+                        <h2>Почему стоит войти в TrainingCards?</h2>
+                        <div class="benefits-grid">
+                            <div class="benefit-item">
+                                <h3>📚 Сохранение прогресса</h3>
+                                <p>Ваша статистика и изученные карточки сохраняются между сессиями</p>
+                            </div>
+                            <div class="benefit-item">
+                                <h3>📊 Персональная статистика</h3>
+                                <p>Отслеживайте свой прогресс и улучшайте результаты</p>
+                            </div>
+                            <div class="benefit-item">
+                                <h3>⚙️ Настройки профиля</h3>
+                                <p>Персонализируйте обучение под свои предпочтения</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 TrainingCards. Все права защищены.</p>
+            <div class="footer-links">
+                <a href="/about">О нас</a>
+                <a href="/contact">Контакты</a>
+            </div>
+        </div>
+    </footer>
+	
+	<script src="/js/burger.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginForm = document.querySelector('#login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const data = Object.fromEntries(formData);
+                    
+                    try {
+                        const response = await fetch('/api/login', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(data)
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            alert(result.message);
+                            window.location.href = '/dashboard';
+                        } else {
+                            alert(result.message);
+                        }
+                    } catch (error) {
+                        console.error('Ошибка:', error);
+                        alert('Произошла ошибка при входе');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

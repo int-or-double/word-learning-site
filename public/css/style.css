@@ -1,0 +1,1439 @@
+/* Основные стили для TrainingCards */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', serif;
+    background-color: #f8f5f0;
+    color: #333;
+    line-height: 1.6;
+}
+
+/* Навигация */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background: #fff;
+    border-bottom: 2px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    position: relative;
+}
+
+.nav-brand {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.nav-links a:not(.btn-universal) {
+    text-decoration: none;
+    color: #2c3e50;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:not(.btn-universal):hover {
+    background-color: #ecf0f1;
+}
+
+/* Бургер-меню */
+.burger-menu {
+    display: none;
+    flex-direction: column;
+    cursor: pointer;
+    padding: 5px;
+    z-index: 101;
+}
+
+.burger-line {
+    width: 25px;
+    height: 3px;
+    background-color: #2c3e50;
+    margin: 3px 0;
+    transition: 0.3s;
+    border-radius: 2px;
+}
+
+
+/* Универсальные кнопки с простым hover-эффектом */
+.btn-universal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 120px;
+    min-height: 45px;
+    padding: 12px 20px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-size: 14px;
+    border: 2px solid;
+    text-align: center;
+    box-sizing: border-box;
+    margin: 0.2rem;
+}
+
+/* Шаблон 1 - Синяя кнопка */
+.btn-template-1 {
+    background-color: rgb(52, 152, 219);
+    border-color: rgb(41, 128, 185);
+    color: rgb(255, 255, 255);
+}
+
+.btn-template-1:hover {
+    background-color: rgb(41, 128, 185);
+    transform: translateY(-2px);
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+
+/* Шаблон 2 - Белая кнопка */
+.btn-template-2 {
+    background-color: rgb(255, 255, 255);
+    border-color: rgb(41, 128, 185);
+    color: rgb(52, 152, 219);
+}
+
+.btn-template-2:hover {
+    background-color: rgb(52, 152, 219);
+    color: rgb(255, 255, 255);
+    transform: translateY(-2px);
+    text-decoration: none;
+}
+
+/* Большие кнопки */
+.btn-large {
+    min-width: 150px;
+    min-height: 55px;
+    padding: 15px 25px;
+    font-size: 16px;
+}
+
+/* Кнопки для главной страницы */
+.hero-buttons {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+}
+
+.hero-btn {
+    min-width: 200px;
+    min-height: 55px;
+    font-size: 16px;
+}
+
+/* Кнопки для тренировки */
+.training-btn {
+    min-width: 200px;
+    min-height: 50px;
+    margin: 20px auto;
+    display: block;
+}
+
+/* Герой секция */
+.hero {
+    background: 
+        linear-gradient(rgba(236, 240, 241, 0.5), rgba(189, 195, 199, 0.5)),
+        url('/images/hero-background.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    padding: 6rem 5%;
+    text-align: center;
+    border-bottom: 3px solid #95a5a6;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.hero-content {
+    background: rgba(255, 255, 255, 0.85);
+    padding: 2rem;
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+    max-width: 800px;
+    margin: 0 auto;
+}
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #34495e;
+}
+
+/* Карточки функций */
+.features {
+    padding: 6rem 5%;
+    text-align: center;
+    background-color: #fff;
+    margin-top: 3rem;
+}
+
+.features h2 {
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.card {
+    background: #fff;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 5px 5px 0 #95a5a6;
+    border: 2px solid #7f8c8d;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.card h3 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+/* Карточки-перевертыши */
+.card-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 2rem 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.flip-card {
+    background-color: transparent;
+    width: 300px;
+    height: 220px;
+    perspective: 1000px;
+    cursor: pointer;
+    margin: 1rem;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.8s;
+    transform-style: preserve-3d;
+    box-shadow: 0 4px 15px 0 rgba(0,0,0,0.2);
+    border-radius: 15px;
+}
+
+.flip-card:hover .flip-card-inner {
+    transform: rotateY(5deg) rotateX(5deg) scale(1.02);
+}
+
+.flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1.2rem;
+    border-radius: 15px;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+.flip-card-front {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    border: 3px solid #1f618d;
+}
+
+.flip-card-back {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+    color: #333;
+    transform: rotateY(180deg);
+    text-align: left;
+    border: 3px solid #3498db;
+    padding: 1.5rem;
+    overflow-y: auto;
+}
+
+.flip-card-front h3 {
+    font-size: 1.3rem;
+    margin: 0;
+    text-align: center;
+    word-break: break-word;
+    line-height: 1.3;
+    padding: 0.5rem;
+}
+
+.flip-card-back .explanation {
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    font-size: 1rem;
+    line-height: 1.4;
+    word-break: break-word;
+    flex-grow: 1;
+    overflow-wrap: break-word;
+}
+
+.flip-card-back .note {
+    font-style: italic;
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    border-left: 3px solid #3498db;
+    padding-left: 0.8rem;
+    margin-top: auto;
+    align-self: stretch;
+    overflow-wrap: break-word;
+    line-height: 1.3;
+}
+
+.flip-card-back {
+    display: flex;
+    flex-direction: column;
+}
+
+.flip-card-back .explanation {
+    flex: 1;
+    overflow-y: auto;
+    max-height: 70%;
+    padding-right: 0.5rem;
+}
+
+.flip-card-back .note {
+    margin-top: 1rem;
+    flex-shrink: 0;
+}
+
+.flip-card-back::-webkit-scrollbar {
+    width: 6px;
+}
+
+.flip-card-back::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.flip-card-back::-webkit-scrollbar-thumb {
+    background: #3498db;
+    border-radius: 3px;
+}
+
+.flip-card-back::-webkit-scrollbar-thumb:hover {
+    background: #2980b9;
+}
+
+/* Стили для секции примеров на главной странице */
+.examples {
+    padding: 4rem 5%;
+    background-color: #f8f5f0;
+    margin-top: 3rem;
+}
+
+.examples h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+}
+
+/* Стили для тренировочной страницы */
+.training-area {
+    padding: 2rem 5%;
+    text-align: center;
+    min-height: 80vh;
+}
+
+.training-area h1 {
+    color: #2c3e50;
+    margin-bottom: 2rem;
+    font-size: 2.2rem;
+}
+
+.training-stats {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.stat {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+    font-weight: bold;
+    border: 2px solid #3498db;
+    min-width: 120px;
+}
+
+.stat span {
+    display: block;
+    font-size: 1.5rem;
+    color: #3498db;
+    margin-top: 0.5rem;
+}
+
+.training-controls {
+    margin-top: 2rem;
+    text-align: center;
+}
+/* Стили для страницы О нас */
+.about-page {
+    padding: 3rem 5%;
+    background-color: #fff;
+    min-height: 70vh;
+}
+
+.about-page .container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+.about-page h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #3498db;
+}
+
+.about-content {
+    line-height: 1.8;
+}
+
+.intro-text {
+    font-size: 1.3rem;
+    color: #34495e;
+    margin-bottom: 2rem;
+    font-weight: 500;
+}
+
+.about-content h2 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin: 2.5rem 0 1.5rem 0;
+    padding-top: 1rem;
+}
+
+.about-content h3 {
+    color: #3498db;
+    font-size: 1.3rem;
+    margin: 1rem 0 0.5rem 0;
+}
+
+.about-content p {
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.features-list, .steps-list {
+    margin: 1.5rem 0;
+    padding-left: 2rem;
+}
+
+.features-list li, .steps-list li {
+    margin-bottom: 0.8rem;
+    font-size: 1.1rem;
+}
+
+.features-list li {
+    list-style-type: disc;
+}
+
+.steps-list li {
+    list-style-type: decimal;
+    margin-bottom: 1rem;
+}
+
+/* Сетка для аудитории */
+.audience-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.audience-item {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid #3498db;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.audience-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.audience-item h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+/* Сетка для преимуществ */
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.benefit-item {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 2px solid #3498db;
+    transition: transform 0.3s ease;
+}
+
+.benefit-item:hover {
+    transform: translateY(-5px);
+}
+
+.benefit-item h3 {
+    margin-top: 0;
+    color: #2c3e50;
+}
+
+/* Блок миссии */
+.mission-statement {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin: 3rem 0;
+    text-align: center;
+}
+
+.mission-statement p {
+    color: white;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+.cta-text {
+    font-weight: bold;
+    font-size: 1.3rem !important;
+    margin-bottom: 0 !important;
+}
+/* Футер */
+footer {
+    background-color: #2c3e50;
+    color: white;
+    padding: 2rem 5%;
+    margin-top: 3rem;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.footer-links a {
+    color: white;
+    text-decoration: none;
+    margin-left: 1rem;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+/* Стили для центрированной страницы Контакты */
+.contact-centered {
+    padding: 3rem 5%;
+    background-color: #fff;
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+}
+
+.content-wrapper {
+    max-width: 800px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.contact-centered h1 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 3px solid #3498db;
+}
+
+.contact-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.contact-section {
+    margin-bottom: 1rem;
+}
+
+.contact-text {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: #333;
+    text-align: center;
+}
+
+.contact-email {
+    font-weight: bold;
+    color: #3498db;
+}
+
+.contact-email a {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.contact-email a:hover {
+    text-decoration: underline;
+    color: #2980b9;
+}
+
+.creator-message {
+    background: #e3f2fd;
+    padding: 1.5rem;
+    border-radius: 10px;
+    border-left: 4px solid #3498db;
+    text-align: center;
+}
+
+.creator-message p {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #2c3e50;
+    line-height: 1.5;
+}
+
+.support-section h2 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin: 1rem 0;
+}
+
+.support-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.support-item {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 2px solid #27ae60;
+    transition: transform 0.3s ease;
+    text-align: center;
+}
+
+.support-item:hover {
+    transform: translateY(-5px);
+}
+
+.support-item h3 {
+    color: #27ae60;
+    margin-top: 0;
+    font-size: 1.3rem;
+}
+
+.bank-card {
+    font-family: 'Courier New', monospace;
+    font-size: 1.3rem;
+    font-weight: bold;
+    color: #27ae60;
+    background: #e8f5e9;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    display: inline-block;
+    letter-spacing: 2px;
+    border: 2px dashed #27ae60;
+    margin: 1rem 0;
+}
+
+.qr-placeholder {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+    justify-content: center;
+}
+
+.qr-code-area {
+    flex: 1;
+    min-width: 120px;
+    height: 120px;
+    background: #f1f8e9;
+    border: 2px dashed #27ae60;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0.5rem;
+}
+
+.qr-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.qr-code-area p {
+    margin: 0;
+    color: #666;
+    font-size: 0.8rem;
+}
+
+.mission-statement {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    margin: 1rem 0;
+    text-align: center;
+}
+
+.mission-statement p {
+    color: white;
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+}
+
+.cta-text {
+    font-weight: bold;
+    font-size: 1.3rem !important;
+    margin-bottom: 0 !important;
+}
+/* Дополнительные стили для страницы входа */
+.auth-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    padding: 2rem;
+    border-radius: 15px;
+    border: 2px solid #3498db;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    margin-bottom: 2rem;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-header h2 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 1.8rem;
+}
+
+.auth-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+.auth-form {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+    font-size: 1.1rem;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #bdc3c7;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+}
+
+.form-group input::placeholder {
+    color: #95a5a6;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.btn-large {
+    min-width: 200px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #ecf0f1;
+}
+
+.auth-link {
+    color: #3498db;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-link:hover {
+    text-decoration: underline;
+    color: #2980b9;
+}
+
+.benefits-section {
+    margin-top: 3rem;
+}
+
+.benefits-section h2 {
+    text-align: center;
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.benefit-item {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 2px solid #3498db;
+    transition: transform 0.3s ease;
+}
+
+.benefit-item:hover {
+    transform: translateY(-5px);
+}
+
+.benefit-item h3 {
+    color: #2c3e50;
+    margin-top: 0;
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+}
+
+.benefit-item p {
+    color: #333;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Адаптивность для страницы входа */
+@media (max-width: 768px) {
+    .auth-card {
+        padding: 1.5rem;
+    }
+    
+    .auth-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .auth-header p {
+        font-size: 1rem;
+    }
+    
+    .form-group input {
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
+    
+    .btn-large {
+        min-width: 150px;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
+    
+    .benefits-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .benefit-item {
+        padding: 1rem;
+    }
+    
+    .benefit-item h3 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 1rem;
+    }
+    
+    .auth-header h2 {
+        font-size: 1.3rem;
+    }
+    
+    .form-group label {
+        font-size: 1rem;
+    }
+    
+    .form-group input {
+        padding: 0.7rem;
+        font-size: 0.9rem;
+    }
+    
+    .btn-large {
+        min-width: 120px;
+        padding: 0.7rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    
+    .auth-footer {
+        margin-top: 1.5rem;
+    }
+    
+    .benefits-section h2 {
+        font-size: 1.5rem;
+    }
+}
+/* ==================== АДАПТИВНОСТЬ ==================== */
+
+@media (max-width: 768px) {
+    /* Навигация */
+    .navbar {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .nav-links a:not(.btn-universal) {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    .burger-menu {
+        display: flex;
+    }
+    
+    .nav-links {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: white;
+        flex-direction: column;
+        padding: 1rem;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        z-index: 100;
+        gap: 0;
+        border-bottom: 2px solid #ddd;
+    }
+    
+    .nav-links.active {
+        display: flex !important;
+    }
+    
+    .nav-links a:not(.btn-universal) {
+        padding: 1rem;
+        border-bottom: 1px solid #ecf0f1;
+        text-align: center;
+        margin: 0;
+        display: block;
+    }
+    
+    .nav-links .btn-universal {
+        margin: 0.5rem;
+        width: calc(100% - 1rem);
+        text-align: center;
+        justify-content: center;
+    }
+    
+    .nav-brand {
+        font-size: 1.5rem;
+    }
+    
+    /* Кнопки */
+    .btn-universal {
+        min-width: 100px;
+        min-height: 40px;
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    .btn-large {
+        min-width: 120px;
+        min-height: 45px;
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    .hero-btn {
+        min-width: 160px;
+        min-height: 50px;
+        font-size: 14px;
+    }
+    
+    .hero-buttons {
+        gap: 1rem;
+    }
+    
+    .training-btn {
+        min-width: 180px;
+        min-height: 45px;
+    }
+    
+    /* Герой секция */
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .hero {
+        padding: 4rem 5%;
+        min-height: 50vh;
+    }
+    
+    .hero p {
+        font-size: 1.1rem;
+    }
+    
+    .hero-content {
+        padding: 1.5rem;
+    }
+    
+    .features {
+        padding: 4rem 5%;
+    }
+    
+    .features h2 {
+        font-size: 1.8rem;
+    }
+    
+    /* Карточки */
+    .flip-card {
+        width: 280px;
+        height: 200px;
+        margin: 0.5rem;
+    }
+    
+    .flip-card-front h3 {
+        font-size: 1.2rem;
+    }
+    
+    .flip-card-back .explanation {
+        font-size: 0.9rem;
+    }
+    
+    .training-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .stat {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .footer-links a {
+        margin: 0 0.5rem;
+    }
+    
+    .examples h2 {
+        font-size: 1.5rem;
+    }
+    
+    .training-area h1 {
+        font-size: 1.8rem;
+    }
+    
+    /* О нас */
+    .about-page {
+        padding: 2rem 3%;
+    }
+    
+    .about-page h1 {
+        font-size: 2rem;
+    }
+    
+    .intro-text {
+        font-size: 1.1rem;
+    }
+    
+    .about-content h2 {
+        font-size: 1.5rem;
+    }
+    
+    .about-content h3 {
+        font-size: 1.2rem;
+    }
+    
+    .audience-grid, .benefits-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .mission-statement {
+        padding: 1.5rem;
+    }
+    
+    .mission-statement p {
+        font-size: 1.1rem;
+    }
+    
+    .cta-text {
+        font-size: 1.2rem !important;
+    }
+    
+    /* Контакты */
+    .contact-centered {
+        padding: 2rem 3%;
+    }
+    
+    .content-wrapper {
+        padding: 0 1rem;
+    }
+    
+    .contact-centered h1 {
+        font-size: 2rem;
+    }
+    
+    .contact-text {
+        font-size: 1.1rem;
+    }
+    
+    .support-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .bank-card {
+        font-size: 1.1rem;
+    }
+    
+    .qr-placeholder {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .qr-code-area {
+        min-width: 100%;
+        height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Кнопки */
+    .btn-universal {
+        min-width: 90px;
+        min-height: 35px;
+        padding: 8px 12px;
+        font-size: 12px;
+        margin: 0.1rem;
+    }
+    
+    .btn-large {
+        min-width: 100px;
+        min-height: 40px;
+        padding: 10px 15px;
+        font-size: 13px;
+    }
+    
+    .hero-btn {
+        min-width: 180px;
+        min-height: 45px;
+        font-size: 13px;
+    }
+    
+    .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+    
+    .training-btn {
+        min-width: 160px;
+        min-height: 40px;
+    }
+    
+    /* Навигация */
+    .nav-links {
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .nav-links a:not(.btn-universal) {
+        padding: 0.2rem 0.6rem;
+        font-size: 0.8rem;
+    }
+    
+    .nav-brand {
+        font-size: 1.5rem;
+    }
+    
+    .navbar {
+        padding: 1rem 3%;
+    }
+    
+    /* Герой секция */
+    .hero {
+        padding: 3rem 5%;
+        min-height: 40vh;
+    }
+    
+    .hero h1 {
+        font-size: 1.8rem;
+    }
+    
+    .hero p {
+        font-size: 1rem;
+    }
+    
+    .hero-content {
+        padding: 1rem;
+    }
+    
+    .features {
+        padding: 3rem 5%;
+    }
+    
+    .features h2 {
+        font-size: 1.5rem;
+    }
+    
+    /* Карточки */
+    .flip-card {
+        width: 250px;
+        height: 180px;
+    }
+    
+    .flip-card-front h3 {
+        font-size: 1.1rem;
+    }
+    
+    .flip-card-back .explanation {
+        font-size: 0.85rem;
+    }
+    
+    .flip-card-back .note {
+        font-size: 0.75rem;
+    }
+    
+    .card-container {
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .examples {
+        padding: 3rem 5%;
+    }
+    
+    .examples h2 {
+        font-size: 1.3rem;
+    }
+    
+    .training-area h1 {
+        font-size: 1.5rem;
+    }
+    
+    .training-stats {
+        gap: 1rem;
+    }
+    
+    .stat {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.9rem;
+    }
+    
+    .stat span {
+        font-size: 1.2rem;
+    }
+    
+    /* О нас */
+    .about-page {
+        padding: 1.5rem 2%;
+    }
+    
+    .about-page h1 {
+        font-size: 1.8rem;
+    }
+    
+    .about-content h2 {
+        font-size: 1.4rem;
+    }
+    
+    .features-list, .steps-list {
+        padding-left: 1.5rem;
+    }
+    
+    .features-list li, .steps-list li {
+        font-size: 1rem;
+    }
+    
+    .audience-item, .benefit-item {
+        padding: 1rem;
+    }
+    
+    .mission-statement {
+        padding: 1rem;
+    }
+    
+    .mission-statement p {
+        font-size: 1rem;
+    }
+    
+    .cta-text {
+        font-size: 1.1rem !important;
+    }
+    
+    /* Контакты */
+    .contact-centered {
+        padding: 1.5rem 2%;
+    }
+    
+    .content-wrapper {
+        padding: 0 0.5rem;
+    }
+    
+    .contact-centered h1 {
+        font-size: 1.8rem;
+    }
+    
+    .contact-text {
+        font-size: 1rem;
+    }
+    
+    .bank-card {
+        font-size: 1rem;
+        padding: 0.3rem 0.8rem;
+    }
+    
+    .support-item {
+        padding: 1rem;
+    }
+    
+    .qr-code-area {
+        height: 100px;
+    }
+    
+    .qr-code-area p {
+        font-size: 0.7rem;
+    }
+    
+    .mission-statement {
+        padding: 1rem;
+    }
+    
+    .mission-statement p {
+        font-size: 1rem;
+    }
+    
+    .cta-text {
+        font-size: 1.1rem !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .flip-card {
+        width: 220px;
+        height: 160px;
+    }
+    
+    .flip-card-front h3 {
+        font-size: 1rem;
+    }
+    
+    .hero h1 {
+        font-size: 1.5rem;
+    }
+    
+    .btn-universal {
+        min-width: 80px;
+        min-height: 32px;
+        padding: 6px 10px;
+        font-size: 11px;
+    }
+    
+    .hero-btn {
+        min-width: 160px;
+        min-height: 40px;
+        font-size: 12px;
+    }
+}
