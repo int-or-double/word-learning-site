@@ -142,16 +142,17 @@ app.get('/register', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
-    // Получаем все карточки для демонстрации
-    db.all(`SELECT * FROM cards ORDER BY created_at DESC`, [], (err, cards) => {
+    // Получаем все слова для демонстрации
+    db.all(`SELECT * FROM cards ORDER BY created_at DESC`, [], (err, words) => {
         if (err) {
             console.error('Ошибка получения карточек для дашборда:', err.message);
-            res.render('dashboard', { cards: [], user: null });
+            res.render('dashboard', { words: [], user: null });
         } else {
-            res.render('dashboard', { cards: cards, user: { username: 'Гость' } });
+            res.render('dashboard', { words: words || [], user: { username: 'Гость' } });
         }
     });
 });
+
 
 app.get('/training', (req, res) => {
     // Получаем карточки для тренировки

@@ -3,74 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Панель управления - WordLearn</title>
+    <title>Панель управления - TrainingCards</title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
     <header>
-		<nav class="navbar">
-			<div class="nav-brand">TrainingCards</div>
-			<div class="nav-links">
-				<a href="/">Главная</a>
-				<a href="/dashboard">Панель</a>
-				<a href="/about">О нас</a>
-				<a href="/contact">Контакты</a>
-				
-				<!-- Бургер-меню для мобильных -->
-			<div class="burger-menu" id="burgerMenu">
-				<div class="burger-line"></div>
-				<div class="burger-line"></div>
-				<div class="burger-line"></div>
-			</div>
-
-				<% if (typeof user !== 'undefined' && user) { %>
-					<span>Привет, <%= user.username %>!</span>
-					<a href="/logout" class="btn-universal btn-template-2">Выйти</a>
-				<% } else { %>
-					<a href="/login" class="btn-universal btn-template-1">Войти</a>
-					<a href="/register" class="btn-universal btn-template-2">Регистрация</a>
-				<% } %>
-			</div>
-		</nav>
-	</header>
-
-
+        <nav class="navbar">
+            <div class="nav-brand">TrainingCards</div>
+            <div class="nav-links">
+                <a href="/">Главная</a>
+                <a href="/dashboard">Панель</a>
+                <a href="/about">О нас</a>
+                <a href="/contact">Контакты</a>
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <span>Привет, <%= user.username %>!</span>
+                    <a href="/logout" class="btn-universal btn-template-2">Выйти</a>
+                <% } else { %>
+                    <a href="/login" class="btn-universal btn-template-1">Войти</a>
+                    <a href="/register" class="btn-universal btn-template-2">Регистрация</a>
+                <% } %>
+            </div>
+            
+            <div class="burger-menu" id="burgerMenu">
+                <div class="burger-line"></div>
+                <div class="burger-line"></div>
+                <div class="burger-line"></div>
+            </div>
+        </nav>
+    </header>
 
     <main>
-        <section class="dashboard">
-            <h1>Ваша панель управления</h1>
-            
-            <div class="dashboard-stats">
-                <div class="stat-card">
-                    <h3>Изучаемые слова</h3>
-                    <p><%= words.length %></p>
-                </div>
-                <div class="stat-card">
-                    <h3>Сегодня на повторение</h3>
-                    <p>0</p>
-                </div>
-                <div class="stat-card">
-                    <h3>Выучено</h3>
-                    <p>0</p>
-                </div>
-            </div>
-
-            <div class="words-section">
-                <h2>Ваши слова</h2>
-                <button class="btn btn-primary" onclick="addWord()">Добавить слово</button>
+        <section class="about-page">
+            <div class="container">
+                <h1>Панель управления</h1>
                 
-                <div class="word-cards">
-                    <% words.forEach(word => { %>
-                    <div class="word-card">
-                        <h3><%= word.word %></h3>
-                        <p class="translation"><%= word.translation %></p>
-                        <p class="example"><%= word.example %></p>
-                        <div class="word-actions">
-                            <button class="btn btn-outline">Изучаю</button>
-                            <button class="btn btn-primary">Выучил</button>
+                <div class="about-content">
+                    <div class="dashboard-stats">
+                        <h2>Ваша статистика</h2>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <h3>📚 Изучаемые карточки</h3>
+                                <p class="stat-number"><%= words.length || 0 %></p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>📅 Сегодня на повторение</h3>
+                                <p class="stat-number">0</p>
+                            </div>
+                            <div class="stat-card">
+                                <h3>🏆 Выучено</h3>
+                                <p class="stat-number">0</p>
+                            </div>
                         </div>
                     </div>
-                    <% }); %>
+
+                    <div class="words-section">
+                        <h2>Ваши карточки</h2>
+                        <div class="dashboard-actions">
+                            <button class="btn-universal btn-template-1" onclick="addCard()">Добавить карточку</button>
+                            <button class="btn-universal btn-template-2" onclick="startTraining()">Начать тренировку</button>
+                        </div>
+                        
+                        <div class="card-container">
+                            <% if (words && words.length > 0) { %>
+                                <% words.forEach(word => { %>
+                                <div class="flip-card">
+                                    <div class="flip-card-inner">
+                                        <div class="flip-card-front">
+                                            <h3><%= word.front %></h3>
+                                        </div>
+                                        <div class="flip-card-back">
+                                            <p class="explanation">Объяснение: <%= word.back %></p>
+                                            <% if (word.note) { %>
+                                            <p class="note">Справка: <%= word.note %></p>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% }); %>
+                            <% } else { %>
+                                <div class="no-cards">
+                                    <p>У вас пока нет карточек для изучения.</p>
+                                    <p>Нажмите "Добавить карточку", чтобы создать первую!</p>
+                                </div>
+                            <% } %>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -78,22 +95,23 @@
 
     <footer>
         <div class="footer-content">
-            <p>&copy; 2025 WordLearn. Все права защищены.</p>
+            <p>&copy; 2025 TrainingCards. Все права защищены.</p>
             <div class="footer-links">
                 <a href="/about">О нас</a>
                 <a href="/contact">Контакты</a>
             </div>
         </div>
     </footer>
-	<script src="/js/burger.js"></script>
-    <script src="/js/main.js"></script>
-	
 
+    <script src="/js/burger.js"></script>
     <script>
-        function addWord() {
-            alert('Функция добавления слов будет реализована позже!');
+        function addCard() {
+            alert('Функция добавления карточек будет реализована позже!');
+        }
+        
+        function startTraining() {
+            window.location.href = '/training';
         }
     </script>
 </body>
 </html>
-
