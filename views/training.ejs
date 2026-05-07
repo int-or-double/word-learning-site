@@ -12,11 +12,11 @@
 			<div class="nav-brand">TrainingCards</div>
 			<div class="nav-links">
 				<a href="/">Главная</a>
-				<a href="/training">Тренировка</a>
+				<a href="/dashboard">Панель</a>
 				<a href="/about">О нас</a>
 				<a href="/contact">Контакты</a>
 				<% if (typeof user !== 'undefined' && user) { %>
-					<span>Привет, <%= user.username %>!</span>
+					<a href="/dashboard" class="btn-universal btn-template-1">Профиль</a>
 					<a href="/logout" class="btn-universal btn-template-2">Выйти</a>
 				<% } else { %>
 					<a href="/login" class="btn-universal btn-template-1">Войти</a>
@@ -30,6 +30,8 @@
 				<div class="burger-line"></div>
 			</div>
 		</nav>
+	</header>
+	>
 	</header>
 
 
