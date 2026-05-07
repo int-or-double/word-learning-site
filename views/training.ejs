@@ -10,18 +10,20 @@
     <header>
 		<nav class="navbar">
 			<div class="nav-brand">TrainingCards</div>
-			
-			<!-- Обычное меню для десктопа -->
-			<div class="nav-links" id="navLinks">
+			<div class="nav-links">
 				<a href="/">Главная</a>
 				<a href="/training">Тренировка</a>
 				<a href="/about">О нас</a>
 				<a href="/contact">Контакты</a>
-				<a href="/login" class="btn-universal btn-template-1">Войти</a>
-				<a href="/register" class="btn-universal btn-template-2">Регистрация</a>
+				<% if (typeof user !== 'undefined' && user) { %>
+					<span>Привет, <%= user.username %>!</span>
+					<a href="/logout" class="btn-universal btn-template-2">Выйти</a>
+				<% } else { %>
+					<a href="/login" class="btn-universal btn-template-1">Войти</a>
+					<a href="/register" class="btn-universal btn-template-2">Регистрация</a>
+				<% } %>
 			</div>
 			
-			<!-- Бургер-меню для мобильных -->
 			<div class="burger-menu" id="burgerMenu">
 				<div class="burger-line"></div>
 				<div class="burger-line"></div>
@@ -29,6 +31,7 @@
 			</div>
 		</nav>
 	</header>
+
 
 
 

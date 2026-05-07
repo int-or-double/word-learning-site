@@ -4,15 +4,22 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
+const cookieParser = require('cookie-parser');
+require('dotenv').config();
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = '0.0.0.0';
+
+// Secret key for JWT
+const SECRET_KEY = process.env.ACCESS_TOKEN_SECRET || 'UBp68MhWhQbtpqpeircHZF6isP2rcxVy1Oi2tEjhko4=';
 
 // Middleware
 app.use(cors());
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // View engine
@@ -108,69 +115,103 @@ function insertSampleCards() {
     console.log('Примерные карточки добавлены');
 }
 
-// Middleware для проверки токена
+// Middleware для проверки токена из cookies
 const authenticateToken = (req, res, next) => {
-    const token = req.headers['authorization']?.split(' ')[1];
-    if (!token) return res.sendStatus(401);
-
-    jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || 'your-secret-key', (err, user) => {
-        if (err) return res.sendStatus(403);
-        req.user = user;
+    // Проверяем токен в cookies
+    const token = req.cookies.token;
+    
+    if (!token) {
+        // Если нет токена, проверяем в headers (для API)
+        const authHeader = req.headers['authorization'];
+        if (authHeader) {
+            const tokenFromHeader = authHeader.split(' ')[1];
+            if (tokenFromHeader) {
+                req.token = tokenFromHeader;
+                jwt.verify(tokenFromHeader, SECRET_KEY, (err, user) => {
+                    if (!err) {
+                        req.user = user;
+                    }
+                });
+            }
+        }
+        return next(); // Продолжаем выполнение, даже если нет токена
+    }
+    
+    jwt.verify(token, SECRET_KEY, (err, user) => {
+        if (err) {
+            res.clearCookie('token');
+        } else {
+            req.user = user;
+            req.token = token;
+        }
         next();
     });
 };
 
-// Routes
-app.get('/', (req, res) => {
-    // Получаем 3 случайных карточки для демонстрации
+// Middleware для защиты маршрутов
+const requireAuth = (req, res, next) => {
+    if (!req.user) {
+        return res.redirect('/login');
+    }
+    next();
+};
+
+// Routes с middleware
+app.get('/', authenticateToken, (req, res) => {
     db.all(`SELECT * FROM cards ORDER BY RANDOM() LIMIT 3`, [], (err, cards) => {
         if (err) {
-            console.error('Ошибка получения карточек:', err.message);
-            res.render('index', { cards: [] });
+            res.render('index', { cards: [], user: req.user });
         } else {
-            res.render('index', { cards: cards });
+            res.render('index', { cards: cards, user: req.user });
         }
     });
 });
 
-app.get('/login', (req, res) => {
-    res.render('login');
+app.get('/login', authenticateToken, (req, res) => {
+    if (req.user) {
+        return res.redirect('/dashboard');
+    }
+    res.render('login', { user: req.user });
 });
 
-app.get('/register', (req, res) => {
-    res.render('register');
+app.get('/register', authenticateToken, (req, res) => {
+    if (req.user) {
+        return res.redirect('/dashboard');
+    }
+    res.render('register', { user: req.user });
 });
 
-app.get('/dashboard', (req, res) => {
-    // Получаем все слова для демонстрации
+app.get('/dashboard', authenticateToken, requireAuth, (req, res) => {
     db.all(`SELECT * FROM cards ORDER BY created_at DESC`, [], (err, words) => {
         if (err) {
-            console.error('Ошибка получения карточек для дашборда:', err.message);
-            res.render('dashboard', { words: [], user: null });
+            res.render('dashboard', { words: [], user: req.user });
         } else {
-            res.render('dashboard', { words: words || [], user: { username: 'Гость' } });
+            res.render('dashboard', { words: words || [], user: req.user });
         }
     });
 });
 
-
-app.get('/training', (req, res) => {
-    // Получаем карточки для тренировки
+app.get('/training', authenticateToken, (req, res) => {
     db.all(`SELECT * FROM cards ORDER BY RANDOM() LIMIT 10`, [], (err, cards) => {
         if (err) {
-            console.error('Ошибка получения карточек для тренировки:', err.message);
-            res.render('training', { cards: [] });
+            res.render('training', { cards: [], user: req.user });
         } else {
-            res.render('training', { cards: cards });
+            res.render('training', { cards: cards, user: req.user });
         }
     });
 });
 
-app.get('/about', (req, res) => {
-    res.render('about');
+app.get('/about', authenticateToken, (req, res) => {
+    res.render('about', { user: req.user });
 });
-app.get('/contact', (req, res) => {
-    res.render('contact');
+
+app.get('/contact', authenticateToken, (req, res) => {
+    res.render('contact', { user: req.user });
+});
+
+app.get('/logout', (req, res) => {
+    res.clearCookie('token');
+    res.redirect('/');
 });
 
 // API endpoints
@@ -200,7 +241,15 @@ app.post('/api/register', async (req, res) => {
                         }
                         
                         const token = jwt.sign({ id: this.lastID, username: username }, 
-                            process.env.ACCESS_TOKEN_SECRET || 'your-secret-key');
+                            SECRET_KEY, 
+                            { expiresIn: '24h' });
+                        
+                        // Устанавливаем cookie
+                        res.cookie('token', token, { 
+                            httpOnly: true, 
+                            maxAge: 24 * 60 * 60 * 1000, // 24 часа
+                            sameSite: 'strict'
+                        });
                         
                         res.json({ 
                             success: true, 
@@ -237,7 +286,15 @@ app.post('/api/login', (req, res) => {
                 }
                 
                 const token = jwt.sign({ id: user.id, username: user.username }, 
-                    process.env.ACCESS_TOKEN_SECRET || 'your-secret-key');
+                    SECRET_KEY,
+                    { expiresIn: '24h' });
+                
+                // Устанавливаем cookie
+                res.cookie('token', token, { 
+                    httpOnly: true, 
+                    maxAge: 24 * 60 * 60 * 1000, // 24 часа
+                    sameSite: 'strict'
+                });
                 
                 res.json({ 
                     success: true, 
@@ -254,7 +311,7 @@ app.post('/api/login', (req, res) => {
 });
 
 // Получение карточек пользователя
-app.get('/api/cards', authenticateToken, (req, res) => {
+app.get('/api/cards', authenticateToken, requireAuth, (req, res) => {
     db.all(`SELECT c.*, uc.status FROM cards c 
             LEFT JOIN user_cards uc ON c.id = uc.card_id AND uc.user_id = ?
             ORDER BY c.created_at DESC`, [req.user.id], (err, cards) => {
@@ -267,7 +324,7 @@ app.get('/api/cards', authenticateToken, (req, res) => {
 });
 
 // Добавление новой карточки
-app.post('/api/cards', authenticateToken, (req, res) => {
+app.post('/api/cards', authenticateToken, requireAuth, (req, res) => {
     const { front, back, note, category } = req.body;
     
     db.run(`INSERT INTO cards (front, back, note, category, user_id) VALUES (?, ?, ?, ?, ?)`, 
@@ -290,6 +347,7 @@ app.listen(PORT, HOST, () => {
     console.log(`Сервер запущен на http://${HOST}:${PORT}`);
 });
 
+// Обработка завершения работы
 process.on('SIGINT', () => {
     db.close((err) => {
         if (err) {
