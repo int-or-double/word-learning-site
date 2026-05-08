@@ -36,7 +36,7 @@ const db = new sqlite3.Database('./database.db', (err) => {
     }
 });
 
-// Функция инициализации базы данных
+// Функция инициализации базы данных с наборами
 function initializeDatabase() {
     db.serialize(() => {
         // Таблица пользователей
@@ -54,22 +54,42 @@ function initializeDatabase() {
             }
         });
 
+        // Таблица наборов карточек
+        db.run(`CREATE TABLE IF NOT EXISTS card_sets (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT,
+            category TEXT,
+            user_id INTEGER,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users (id)
+        )`, (err) => {
+            if (err) {
+                console.error('Ошибка создания таблицы card_sets:', err.message);
+            } else {
+                console.log('Таблица card_sets создана');
+            }
+        });
+
         // Таблица карточек
         db.run(`CREATE TABLE IF NOT EXISTS cards (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             front TEXT NOT NULL,
             back TEXT NOT NULL,
             note TEXT,
-            category TEXT,
+            set_id INTEGER,
             user_id INTEGER,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (set_id) REFERENCES card_sets (id),
             FOREIGN KEY (user_id) REFERENCES users (id)
         )`, (err) => {
             if (err) {
                 console.error('Ошибка создания таблицы cards:', err.message);
             } else {
                 console.log('Таблица cards создана');
-                insertSampleCards();
+                insertSampleSetsAndCards();
             }
         });
 
@@ -94,30 +114,66 @@ function initializeDatabase() {
     });
 }
 
-// Функция добавления примерных карточек
-function insertSampleCards() {
-    const sampleCards = [
-        // Краткие и информативные карточки
-        ['Квантовая запутанность', 'Связь частиц на расстоянии', 'Эйнштейн назвал это "жутким действием"'],
-        ['Фотосинтез', 'Процесс создания энергии растениями', 'Производит кислород для дыхания'],
-        ['Блокчейн', 'Цепочка защищенных блоков данных', 'Основа криптовалют типа биткоина'],
-        ['Искусственный интеллект', 'Машины, имитирующие человеческий разум', 'Используется в чатах и распознавании'],
-        ['Относительность', 'Теория искривления пространства-времени', 'Объясняет гравитацию у Эйнштейна'],
-        ['Нейронные сети', 'Алгоритмы, подобные мозгу', 'Учатся на примерах и данных'],
-        ['ДНК', 'Носитель генетической информации', 'Содержит инструкции для развития'],
-        ['Большой взрыв', 'Теория возникновения Вселенной', 'Произошел около 13.8 миллиардов лет назад']
-    ];
 
-    sampleCards.forEach(card => {
-        db.run(`INSERT OR IGNORE INTO cards (front, back, note) VALUES (?, ?, ?)`, card, (err) => {
-            if (err) {
-                console.error('Ошибка добавления примерной карточки:', err.message);
-            }
+// Функция добавления примерных наборов и карточек
+function insertSampleSetsAndCards() {
+    // Проверяем, есть ли уже данные
+    db.get(`SELECT COUNT(*) as count FROM card_sets`, [], (err, row) => {
+        if (err || row.count > 0) return;
+        
+        // Создаем примерные наборы
+        const sampleSets = [
+            ['Английские слова', 'Набор для изучения английского языка', 'language'],
+            ['JavaScript', 'Основы программирования на JavaScript', 'programming'],
+            ['Научные термины', 'Термины из различных наук', 'science']
+        ];
+
+        sampleSets.forEach((set, index) => {
+            db.run(`INSERT INTO card_sets (name, description, category, user_id) VALUES (?, ?, ?, ?)`, 
+                [...set, 1], // user_id = 1 для примера
+                function(err) {
+                    if (err) return;
+                    
+                    const setId = this.lastID;
+                    
+                    // Добавляем карточки в каждый набор
+                    let sampleCards = [];
+                    switch(index) {
+                        case 0: // Английские слова
+                            sampleCards = [
+                                ['Hello', 'Привет', 'Hello, how are you?'],
+                                ['Thank you', 'Спасибо', 'Thank you for your help'],
+                                ['Goodbye', 'До свидания', 'Goodbye, see you tomorrow']
+                            ];
+                            break;
+                        case 1: // JavaScript
+                            sampleCards = [
+                                ['let', 'Объявление переменной', 'let name = "John";'],
+                                ['function', 'Объявление функции', 'function greet() { return "Hello"; }'],
+                                ['if', 'Условный оператор', 'if (condition) { doSomething(); }']
+                            ];
+                            break;
+                        case 2: // Научные термины
+                            sampleCards = [
+                                ['Фотосинтез', 'Процесс создания энергии растениями', 'Производит кислород'],
+                                ['Гравитация', 'Сила притяжения между объектами', 'Держит нас на Земле'],
+                                ['Эволюция', 'Процесс изменения видов', 'Теория Дарвина']
+                            ];
+                            break;
+                    }
+                    
+                    sampleCards.forEach(card => {
+                        db.run(`INSERT INTO cards (front, back, note, set_id, user_id) VALUES (?, ?, ?, ?, ?)`, 
+                            [...card, setId, 1]);
+                    });
+                }
+            );
         });
+        
+        console.log('Примерные наборы и карточки добавлены');
     });
-    
-    console.log('Примерные карточки добавлены');
 }
+
 
 // Middleware для проверки токена из cookies
 const authenticateToken = (req, res, next) => {
@@ -217,6 +273,11 @@ app.get('/logout', (req, res) => {
     res.clearCookie('token');
     res.redirect('/');
 });
+// Страница управления наборами
+app.get('/sets', authenticateToken, requireAuth, (req, res) => {
+    res.render('sets', { user: req.user });
+});
+
 
 // API endpoints
 app.post('/api/register', async (req, res) => {
@@ -327,25 +388,183 @@ app.get('/api/cards', authenticateToken, requireAuth, (req, res) => {
     });
 });
 
-// Добавление новой карточки
-app.post('/api/cards', authenticateToken, requireAuth, (req, res) => {
-    const { front, back, note, category } = req.body;
+// Получение всех наборов пользователя
+app.get('/api/sets', authenticateToken, requireAuth, (req, res) => {
+    console.log('Запрос наборов для пользователя:', req.user.id); // Для отладки
     
-    db.run(`INSERT INTO cards (front, back, note, category, user_id) VALUES (?, ?, ?, ?, ?)`, 
-        [front, back, note, category, req.user.id], 
+    db.all(`SELECT cs.*, COUNT(c.id) as card_count 
+            FROM card_sets cs 
+            LEFT JOIN cards c ON cs.id = c.set_id 
+            WHERE cs.user_id = ? 
+            GROUP BY cs.id 
+            ORDER BY cs.created_at DESC`, 
+            [req.user.id], (err, sets) => {
+        if (err) {
+            console.error('Ошибка получения наборов:', err); // Для отладки
+            res.json({ success: false, message: 'Ошибка получения наборов: ' + err.message });
+        } else {
+            console.log('Получено наборов:', sets.length); // Для отладки
+            res.json({ success: true, sets: sets });
+        }
+    });
+});
+
+// Создание нового набора
+app.post('/api/sets', authenticateToken, requireAuth, (req, res) => {
+    const { name, description, category } = req.body;
+    
+    if (!name) {
+        return res.json({ success: false, message: 'Название набора обязательно' });
+    }
+    
+    db.run(`INSERT INTO card_sets (name, description, category, user_id) VALUES (?, ?, ?, ?)`, 
+        [name, description, category, req.user.id], 
         function(err) {
             if (err) {
-                res.json({ success: false, message: 'Ошибка добавления карточки' });
+                res.json({ success: false, message: 'Ошибка создания набора' });
             } else {
                 res.json({ 
                     success: true, 
-                    message: 'Карточка добавлена!', 
-                    card: { id: this.lastID, front, back, note, category }
+                    message: 'Набор создан!', 
+                    set: { id: this.lastID, name, description, category }
                 });
             }
         }
     );
 });
+
+// Обновление набора
+app.put('/api/sets/:id', authenticateToken, requireAuth, (req, res) => {
+    const setId = req.params.id;
+    const { name, description, category } = req.body;
+    
+    db.run(`UPDATE card_sets SET name = ?, description = ?, category = ?, updated_at = CURRENT_TIMESTAMP 
+            WHERE id = ? AND user_id = ?`, 
+        [name, description, category, setId, req.user.id], 
+        function(err) {
+            if (err) {
+                res.json({ success: false, message: 'Ошибка обновления набора' });
+            } else if (this.changes === 0) {
+                res.json({ success: false, message: 'Набор не найден или доступ запрещен' });
+            } else {
+                res.json({ success: true, message: 'Набор обновлен!' });
+            }
+        }
+    );
+});
+
+// Удаление набора
+app.delete('/api/sets/:id', authenticateToken, requireAuth, (req, res) => {
+    const setId = req.params.id;
+    
+    db.serialize(() => {
+        // Сначала удаляем все карточки из набора
+        db.run(`DELETE FROM cards WHERE set_id = ? AND user_id = ?`, [setId, req.user.id]);
+        
+        // Затем удаляем сам набор
+        db.run(`DELETE FROM card_sets WHERE id = ? AND user_id = ?`, 
+            [setId, req.user.id], 
+            function(err) {
+                if (err) {
+                    res.json({ success: false, message: 'Ошибка удаления набора' });
+                } else if (this.changes === 0) {
+                    res.json({ success: false, message: 'Набор не найден или доступ запрещен' });
+                } else {
+                    res.json({ success: true, message: 'Набор удален!' });
+                }
+            }
+        );
+    });
+});
+
+// Получение карточек из конкретного набора
+app.get('/api/sets/:id/cards', authenticateToken, requireAuth, (req, res) => {
+    const setId = req.params.id;
+    
+    db.all(`SELECT c.*, uc.status 
+            FROM cards c 
+            LEFT JOIN user_cards uc ON c.id = uc.card_id AND uc.user_id = ?
+            WHERE c.set_id = ? AND c.user_id = ?
+            ORDER BY c.created_at DESC`, 
+            [req.user.id, setId, req.user.id], (err, cards) => {
+        if (err) {
+            res.json({ success: false, message: 'Ошибка получения карточек' });
+        } else {
+            res.json({ success: true, cards: cards });
+        }
+    });
+});
+
+// Создание новой карточки
+app.post('/api/cards', authenticateToken, requireAuth, (req, res) => {
+    const { front, back, note, set_id } = req.body;
+    
+    if (!front || !back) {
+        return res.json({ success: false, message: 'Передняя и задняя стороны обязательны' });
+    }
+    
+    // Проверяем, что набор принадлежит пользователю
+    db.get(`SELECT id FROM card_sets WHERE id = ? AND user_id = ?`, 
+        [set_id, req.user.id], (err, set) => {
+            if (err || !set) {
+                return res.json({ success: false, message: 'Набор не найден или доступ запрещен' });
+            }
+            
+            db.run(`INSERT INTO cards (front, back, note, set_id, user_id) VALUES (?, ?, ?, ?, ?)`, 
+                [front, back, note, set_id, req.user.id], 
+                function(err) {
+                    if (err) {
+                        res.json({ success: false, message: 'Ошибка создания карточки' });
+                    } else {
+                        res.json({ 
+                            success: true, 
+                            message: 'Карточка создана!', 
+                            card: { id: this.lastID, front, back, note, set_id }
+                        });
+                    }
+                }
+            );
+        });
+});
+
+// Обновление карточки
+app.put('/api/cards/:id', authenticateToken, requireAuth, (req, res) => {
+    const cardId = req.params.id;
+    const { front, back, note } = req.body;
+    
+    db.run(`UPDATE cards SET front = ?, back = ?, note = ?, updated_at = CURRENT_TIMESTAMP 
+            WHERE id = ? AND user_id = ?`, 
+        [front, back, note, cardId, req.user.id], 
+        function(err) {
+            if (err) {
+                res.json({ success: false, message: 'Ошибка обновления карточки' });
+            } else if (this.changes === 0) {
+                res.json({ success: false, message: 'Карточка не найдена или доступ запрещен' });
+            } else {
+                res.json({ success: true, message: 'Карточка обновлена!' });
+            }
+        }
+    );
+});
+
+// Удаление карточки
+app.delete('/api/cards/:id', authenticateToken, requireAuth, (req, res) => {
+    const cardId = req.params.id;
+    
+    db.run(`DELETE FROM cards WHERE id = ? AND user_id = ?`, 
+        [cardId, req.user.id], 
+        function(err) {
+            if (err) {
+                res.json({ success: false, message: 'Ошибка удаления карточки' });
+            } else if (this.changes === 0) {
+                res.json({ success: false, message: 'Карточка не найдена или доступ запрещен' });
+            } else {
+                res.json({ success: true, message: 'Карточка удалена!' });
+            }
+        }
+    );
+});
+
 
 app.listen(PORT, HOST, () => {
     console.log(`Сервер запущен на http://${HOST}:${PORT}`);

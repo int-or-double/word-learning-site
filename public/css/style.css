@@ -362,46 +362,7 @@ body {
     word-wrap: break-word;
 }
 
-/* Адаптивность для карточек */
-@media (max-width: 768px) {
-    .flip-card {
-        width: 280px;
-        height: 200px;
-    }
-    
-    .flip-card-front h3 {
-        font-size: 1.2rem;
-    }
-    
-    .flip-card-back .explanation {
-        font-size: 0.9rem;
-    }
-    
-    .flip-card-back .note {
-        font-size: 0.75rem;
-    }
-}
 
-@media (max-width: 480px) {
-    .flip-card {
-        width: 250px;
-        height: 180px;
-    }
-    
-    .flip-card-front h3 {
-        font-size: 1.1rem;
-    }
-    
-    .flip-card-back .explanation {
-        font-size: 0.85rem;
-        padding: 0.3rem;
-    }
-    
-    .flip-card-back .note {
-        font-size: 0.7rem;
-        padding: 0.2rem;
-    }
-}
 
 /* Стили для секции примеров на главной странице */
 .examples {
@@ -940,7 +901,7 @@ footer {
     margin: 0;
 }
 
-/* Стили для dashboard */
+/* Стили для dashboard - обновленные */
 .dashboard-stats {
     margin-bottom: 3rem;
 }
@@ -986,34 +947,201 @@ footer {
     margin: 0;
 }
 
-.words-section h2 {
+.dashboard-actions {
+    margin: 3rem 0;
     text-align: center;
-    color: #2c3e50;
-    font-size: 2rem;
-    margin: 3rem 0 2rem 0;
 }
 
-.dashboard-actions {
+.dashboard-actions h2 {
+    color: #2c3e50;
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+}
+
+.action-buttons {
     display: flex;
     justify-content: center;
-    gap: 1rem;
-    margin-bottom: 2rem;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+.welcome-section {
+    margin-top: 3rem;
+}
+
+.welcome-section .mission-statement {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+}
+
+.welcome-section .mission-statement h3 {
+    color: white;
+    margin-top: 0;
+    font-size: 1.5rem;
+}
+
+.welcome-section .mission-statement p {
+    color: white;
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+}
+
+.welcome-section .mission-statement .cta-text {
+    font-weight: bold;
+    font-size: 1.2rem !important;
+    margin-top: 1rem !important;
+}
+/* Стили для страницы наборов */
+.sets-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 2rem 0;
+}
+
+.set-card {
+    background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+    padding: 1.5rem;
+    border-radius: 15px;
+    border: 2px solid #3498db;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.set-card:hover {
+    transform: translateY(-5px);
+}
+
+.set-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.set-header h3 {
+    color: #2c3e50;
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.card-count {
+    background: #3498db;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.set-description {
+    color: #333;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.set-category {
+    color: #7f8c8d;
+    font-size: 0.8rem;
+    font-style: italic;
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid #3498db;
+}
+
+.set-actions {
+    display: flex;
+    gap: 0.5rem;
     flex-wrap: wrap;
 }
 
-.no-cards {
-    text-align: center;
-    padding: 3rem;
-    background: #f8f9fa;
-    border-radius: 15px;
-    border: 2px dashed #bdc3c7;
-    grid-column: 1 / -1;
+.btn-small {
+    min-width: auto;
+    min-height: 35px;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
 }
 
-.no-cards p {
-    font-size: 1.2rem;
+/* Модальное окно */
+.modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 2rem;
+    cursor: pointer;
     color: #7f8c8d;
-    margin: 0.5rem 0;
+}
+
+.close:hover {
+    color: #2c3e50;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #2c3e50;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #bdc3c7;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
 }
 
 /* ==================== АДАПТИВНОСТЬ ==================== */
@@ -1133,7 +1261,6 @@ footer {
     .flip-card {
         width: 280px;
         height: 200px;
-        margin: 0.5rem;
     }
     
     .flip-card-front h3 {
@@ -1142,6 +1269,9 @@ footer {
     
     .flip-card-back .explanation {
         font-size: 0.9rem;
+    }
+    .flip-card-back .note {
+        font-size: 0.75rem;
     }
     
     .training-stats {
@@ -1269,6 +1399,14 @@ footer {
         width: 100%;
         max-width: 300px;
     }
+    .dashboard-actions h2 {
+        font-size: 1.5rem;
+    }
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
     
     /* Страница входа */
     .auth-card {
@@ -1305,6 +1443,24 @@ footer {
     
     .benefit-item h3 {
         font-size: 1.2rem;
+    }
+    /* Адаптивность для страницы наборов */
+    .sets-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .set-card {
+        padding: 1rem;
+    }
+    
+    .set-header h3 {
+        font-size: 1.1rem;
+    }
+    
+    .modal-content {
+        width: 95%;
+        padding: 1.5rem;
     }
 }
 
@@ -1400,10 +1556,15 @@ footer {
     
     .flip-card-back .explanation {
         font-size: 0.85rem;
+        padding: 0.3rem;
     }
     
     .flip-card-back .note {
         font-size: 0.75rem;
+    }
+    .flip-card-back .note {
+        font-size: 0.7rem;
+        padding: 0.2rem;
     }
     
     .card-container {
@@ -1532,12 +1693,20 @@ footer {
         font-size: 1.8rem;
     }
     
-    .no-cards {
-        padding: 2rem 1rem;
+    .welcome-section .mission-statement {
+        padding: 1.5rem 1rem;
     }
     
-    .no-cards p {
+    .welcome-section .mission-statement h3 {
+        font-size: 1.3rem;
+    }
+    
+    .welcome-section .mission-statement p {
         font-size: 1rem;
+    }
+    
+    .welcome-section .mission-statement .cta-text {
+        font-size: 1.1rem !important;
     }
     
     /* Страница входа */
@@ -1570,6 +1739,35 @@ footer {
     
     .benefits-section h2 {
         font-size: 1.5rem;
+    }
+    /* Адаптивность для страницы наборов */
+    .set-header {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .card-count {
+        align-self: flex-start;
+    }
+    
+    .set-actions {
+        flex-direction: column;
+    }
+    
+    .btn-small {
+        width: 100%;
+    }
+    
+    .modal-content {
+        padding: 1rem;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-actions .btn-universal {
+        width: 100%;
     }
 }
 

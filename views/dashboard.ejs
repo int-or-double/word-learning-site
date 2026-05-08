@@ -10,13 +10,14 @@
     <header>
         <nav class="navbar">
             <div class="nav-brand">TrainingCards</div>
-            <div class="nav-links">
+            <div class="nav-links" id="navLinks">
                 <a href="/">Главная</a>
                 <a href="/training">Тренировка</a>
                 <a href="/about">О нас</a>
                 <a href="/contact">Контакты</a>
                 <% if (typeof user !== 'undefined' && user) { %>
                     <a href="/dashboard" class="btn-universal btn-template-1">Профиль</a>
+                    <a href="/sets" class="btn-universal btn-template-1">Наборы</a>
                     <a href="/logout" class="btn-universal btn-template-2">Выйти</a>
                 <% } else { %>
                     <a href="/login" class="btn-universal btn-template-1">Войти</a>
@@ -33,7 +34,6 @@
     </header>
 
 
-
     <main>
         <section class="about-page">
             <div class="container">
@@ -44,12 +44,12 @@
                         <h2>Ваша статистика</h2>
                         <div class="stats-grid">
                             <div class="stat-card">
-                                <h3>📚 Изучаемые карточки</h3>
-                                <p class="stat-number"><%= words.length || 0 %></p>
+                                <h3>📚 Наборы карточек</h3>
+                                <p class="stat-number" id="setsCount">0</p>
                             </div>
                             <div class="stat-card">
-                                <h3>📅 Сегодня на повторение</h3>
-                                <p class="stat-number">0</p>
+                                <h3>🃏 Всего карточек</h3>
+                                <p class="stat-number" id="cardsCount">0</p>
                             </div>
                             <div class="stat-card">
                                 <h3>🏆 Выучено</h3>
@@ -58,36 +58,23 @@
                         </div>
                     </div>
 
-                    <div class="words-section">
-                        <h2>Ваши карточки</h2>
-                        <div class="dashboard-actions">
-                            <button class="btn-universal btn-template-1" onclick="addCard()">Добавить карточку</button>
-                            <button class="btn-universal btn-template-2" onclick="startTraining()">Начать тренировку</button>
+                    <div class="dashboard-actions">
+                        <h2>Управление вашими данными</h2>
+                        <div class="action-buttons">
+                            <a href="/sets" class="btn-universal btn-template-1 btn-large">
+                                Управление наборами
+                            </a>
+                            <a href="/training" class="btn-universal btn-template-2 btn-large">
+                                Начать тренировку
+                            </a>
                         </div>
-                        
-                        <div class="card-container">
-                            <% if (words && words.length > 0) { %>
-                                <% words.forEach(word => { %>
-                                <div class="flip-card">
-                                    <div class="flip-card-inner">
-                                        <div class="flip-card-front">
-                                            <h3><%= word.front %></h3>
-                                        </div>
-                                        <div class="flip-card-back">
-                                            <p class="explanation">Объяснение: <%= word.back %></p>
-                                            <% if (word.note) { %>
-                                            <p class="note">Справка: <%= word.note %></p>
-                                            <% } %>
-                                        </div>
-                                    </div>
-                                </div>
-                                <% }); %>
-                            <% } else { %>
-                                <div class="no-cards">
-                                    <p>У вас пока нет карточек для изучения.</p>
-                                    <p>Нажмите "Добавить карточку", чтобы создать первую!</p>
-                                </div>
-                            <% } %>
+                    </div>
+
+                    <div class="welcome-section">
+                        <div class="mission-statement">
+                            <h3>Добро пожаловать в TrainingCards!</h3>
+                            <p>Создавайте свои наборы карточек для эффективного обучения.</p>
+                            <p class="cta-text">Перейдите в раздел "Наборы" чтобы начать создавать свои карточки!</p>
                         </div>
                     </div>
                 </div>
@@ -107,12 +94,31 @@
 
     <script src="/js/burger.js"></script>
     <script>
-        function addCard() {
-            alert('Функция добавления карточек будет реализована позже!');
-        }
-        
-        function startTraining() {
-            window.location.href = '/training';
+        // Загрузка статистики при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStats();
+        });
+
+        // Загрузка статистики пользователя
+        async function loadStats() {
+            try {
+                // Загружаем количество наборов
+                const setsResponse = await fetch('/api/sets');
+                const setsResult = await setsResponse.json();
+                
+                if (setsResult.success) {
+                    document.getElementById('setsCount').textContent = setsResult.sets.length;
+                    
+                    // Считаем общее количество карточек
+                    let totalCards = 0;
+                    setsResult.sets.forEach(set => {
+                        totalCards += set.card_count || 0;
+                    });
+                    document.getElementById('cardsCount').textContent = totalCards;
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки статистики:', error);
+            }
         }
     </script>
 </body>

@@ -10,13 +10,14 @@
     <header>
         <nav class="navbar">
             <div class="nav-brand">TrainingCards</div>
-            <div class="nav-links">
+            <div class="nav-links" id="navLinks">
                 <a href="/">Главная</a>
                 <a href="/training">Тренировка</a>
                 <a href="/about">О нас</a>
                 <a href="/contact">Контакты</a>
                 <% if (typeof user !== 'undefined' && user) { %>
                     <a href="/dashboard" class="btn-universal btn-template-1">Профиль</a>
+                    <a href="/sets" class="btn-universal btn-template-1">Наборы</a>
                     <a href="/logout" class="btn-universal btn-template-2">Выйти</a>
                 <% } else { %>
                     <a href="/login" class="btn-universal btn-template-1">Войти</a>
@@ -31,6 +32,7 @@
             </div>
         </nav>
     </header>
+
 
     >
 
