@@ -228,7 +228,7 @@ body {
     margin-bottom: 1rem;
 }
 
-/* Карточки-перевертыши */
+/* Карточки-перевертыши - улучшенная версия */
 .card-container {
     display: flex;
     justify-content: center;
@@ -260,10 +260,11 @@ body {
 }
 
 .flip-card:hover .flip-card-inner {
-    transform: rotateY(5deg) rotateX(5deg) scale(1.02);
+    transform: scale(1.02);
 }
 
-.flip-card.flipped .flip-card-inner {
+.flip-card.flipped .flip-card-inner,
+.flip-card-inner.flipped {
     transform: rotateY(180deg);
 }
 
@@ -295,8 +296,9 @@ body {
     transform: rotateY(180deg);
     text-align: left;
     border: 3px solid #3498db;
-    padding: 1.5rem;
-    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
 }
 
 .flip-card-front h3 {
@@ -306,64 +308,99 @@ body {
     word-break: break-word;
     line-height: 1.3;
     padding: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
+/* НОВЫЕ СТИЛИ ДЛЯ БЛОКОВ ТЕКСТА */
 .flip-card-back .explanation {
     font-weight: bold;
-    margin-bottom: 1rem;
     color: #2c3e50;
-    font-size: 1rem;
-    line-height: 1.4;
-    word-break: break-word;
+    font-size: 0.95rem;
+    line-height: 1.3;
     flex-grow: 1;
-    overflow-wrap: break-word;
+    overflow: hidden;
+    padding: 0.5rem;
+    margin: 0 0 0.5rem 0;
+    border-left: 4px solid #27ae60;
+    padding-left: 0.8rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 5; /* Максимум 5 строк */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+    text-overflow: ellipsis;
 }
 
 .flip-card-back .note {
     font-style: italic;
     color: #7f8c8d;
-    font-size: 0.85rem;
-    border-left: 3px solid #3498db;
-    padding-left: 0.8rem;
+    font-size: 0.8rem;
+    line-height: 1.2;
     margin-top: auto;
-    align-self: stretch;
-    overflow-wrap: break-word;
-    line-height: 1.3;
+    padding: 0.3rem;
+    border-left: 3px solid #3498db;
+    padding-left: 0.6rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Максимум 2 строки */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    word-break: break-word;
+    text-overflow: ellipsis;
 }
 
-.flip-card-back {
-    display: flex;
-    flex-direction: column;
-}
-
+/* Ограничения по количеству символов */
 .flip-card-back .explanation {
-    flex: 1;
-    overflow-y: auto;
-    max-height: 70%;
-    padding-right: 0.5rem;
+    max-width: 100%;
+    word-wrap: break-word;
 }
 
 .flip-card-back .note {
-    margin-top: 1rem;
-    flex-shrink: 0;
+    max-width: 100%;
+    word-wrap: break-word;
 }
 
-.flip-card-back::-webkit-scrollbar {
-    width: 6px;
+/* Адаптивность для карточек */
+@media (max-width: 768px) {
+    .flip-card {
+        width: 280px;
+        height: 200px;
+    }
+    
+    .flip-card-front h3 {
+        font-size: 1.2rem;
+    }
+    
+    .flip-card-back .explanation {
+        font-size: 0.9rem;
+    }
+    
+    .flip-card-back .note {
+        font-size: 0.75rem;
+    }
 }
 
-.flip-card-back::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-}
-
-.flip-card-back::-webkit-scrollbar-thumb {
-    background: #3498db;
-    border-radius: 3px;
-}
-
-.flip-card-back::-webkit-scrollbar-thumb:hover {
-    background: #2980b9;
+@media (max-width: 480px) {
+    .flip-card {
+        width: 250px;
+        height: 180px;
+    }
+    
+    .flip-card-front h3 {
+        font-size: 1.1rem;
+    }
+    
+    .flip-card-back .explanation {
+        font-size: 0.85rem;
+        padding: 0.3rem;
+    }
+    
+    .flip-card-back .note {
+        font-size: 0.7rem;
+        padding: 0.2rem;
+    }
 }
 
 /* Стили для секции примеров на главной странице */
