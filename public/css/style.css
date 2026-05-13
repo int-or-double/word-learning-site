@@ -1020,9 +1020,6 @@ footer {
 }
 
 .set-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
     margin-bottom: 1rem;
     flex-shrink: 0;
 }
@@ -1039,19 +1036,6 @@ footer {
     overflow: hidden;
     text-overflow: ellipsis;
     word-break: break-word;
-    flex-grow: 1;
-    margin-right: 0.5rem;
-}
-
-.card-count {
-    background: #3498db;
-    color: white;
-    padding: 0.2rem 0.5rem;
-    border-radius: 10px;
-    font-size: 0.8rem;
-    white-space: nowrap;
-    flex-shrink: 0;
-    align-self: flex-start;
 }
 
 .set-description {
@@ -1096,6 +1080,8 @@ footer {
     min-width: auto;
     text-align: center;
     justify-content: center;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.8rem;
 }
 
 .btn-small {
@@ -1105,9 +1091,9 @@ footer {
     font-size: 0.9rem;
 }
 
-/* Модальное окно - ИСПРАВЛЕННОЕ */
+/* Модальное окно */
 .modal {
-    display: none; /* Скрыто по умолчанию */
+    display: none;
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -1115,14 +1101,13 @@ footer {
     width: 100%;
     height: 100%;
     background-color: rgba(0,0,0,0.5);
+    display: flex;
     align-items: center;
     justify-content: center;
 }
-
 .modal.active {
     display: flex;
 }
-
 .modal-content {
     background-color: white;
     padding: 2rem;
@@ -1143,17 +1128,10 @@ footer {
     font-size: 2rem;
     cursor: pointer;
     color: #7f8c8d;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
 }
 
 .close:hover {
     color: #2c3e50;
-    background-color: #ecf0f1;
 }
 
 .modal-content h2 {
@@ -1195,7 +1173,6 @@ footer {
     justify-content: center;
     flex-wrap: wrap;
 }
-
 
 /* ==================== АДАПТИВНОСТЬ ==================== */
 
@@ -1520,8 +1497,14 @@ footer {
     .set-description {
         font-size: 0.85rem;
     }
-
+    
+    .set-actions .btn-universal {
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+    }
 }
+
+
 
 @media (max-width: 480px) {
     /* Кнопки */

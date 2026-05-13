@@ -495,23 +495,66 @@ app.get('/api/sets/:id/cards', authenticateToken, requireAuth, (req, res) => {
     });
 });
 
-// Создание новой карточки
-app.post('/api/cards', authenticateToken, requireAuth, (req, res) => {
-    const { front, back, note, set_id } = req.body;
+// Страница карточек набора
+app.get('/sets/:setId/cards', authenticateToken, requireAuth, (req, res) => {
+    const setId = req.params.setId;
+    
+    // Проверяем, что набор принадлежит пользователю
+    db.get(`SELECT * FROM card_sets WHERE id = ? AND user_id = ?`, 
+        [setId, req.user.id], (err, set) => {
+            if (err || !set) {
+                return res.redirect('/sets');
+            }
+            
+            res.render('set-cards', { 
+                user: req.user,
+                set: set
+            });
+        });
+});
+
+// API получения карточек набора
+app.get('/api/sets/:setId/cards', authenticateToken, requireAuth, (req, res) => {
+    const setId = req.params.setId;
+    
+    // Проверяем, что набор принадлежит пользователю
+    db.get(`SELECT id FROM card_sets WHERE id = ? AND user_id = ?`, 
+        [setId, req.user.id], (err, set) => {
+            if (err || !set) {
+                return res.status(404).json({ success: false, message: 'Набор не найден' });
+            }
+            
+            // Получаем карточки набора
+            db.all(`SELECT * FROM cards WHERE set_id = ? ORDER BY created_at DESC`, 
+                [setId], (err, cards) => {
+                    if (err) {
+                        res.json({ success: false, message: 'Ошибка получения карточек' });
+                    } else {
+                        res.json({ success: true, cards: cards });
+                    }
+                });
+        });
+});
+
+// API создания карточки
+app.post('/api/sets/:setId/cards', authenticateToken, requireAuth, (req, res) => {
+    const setId = req.params.setId;
+    const { front, back, note } = req.body;
     
     if (!front || !back) {
-        return res.json({ success: false, message: 'Передняя и задняя стороны обязательны' });
+        return res.json({ success: false, message: 'Термин и объяснение обязательны' });
     }
     
     // Проверяем, что набор принадлежит пользователю
     db.get(`SELECT id FROM card_sets WHERE id = ? AND user_id = ?`, 
-        [set_id, req.user.id], (err, set) => {
+        [setId, req.user.id], (err, set) => {
             if (err || !set) {
-                return res.json({ success: false, message: 'Набор не найден или доступ запрещен' });
+                return res.status(404).json({ success: false, message: 'Набор не найден' });
             }
             
+            // Создаем карточку
             db.run(`INSERT INTO cards (front, back, note, set_id, user_id) VALUES (?, ?, ?, ?, ?)`, 
-                [front, back, note, set_id, req.user.id], 
+                [front, back, note, setId, req.user.id], 
                 function(err) {
                     if (err) {
                         res.json({ success: false, message: 'Ошибка создания карточки' });
@@ -519,51 +562,71 @@ app.post('/api/cards', authenticateToken, requireAuth, (req, res) => {
                         res.json({ 
                             success: true, 
                             message: 'Карточка создана!', 
-                            card: { id: this.lastID, front, back, note, set_id }
+                            card: { id: this.lastID, front, back, note, set_id: setId }
                         });
                     }
-                }
-            );
+                });
         });
 });
 
-// Обновление карточки
+// API обновления карточки
 app.put('/api/cards/:id', authenticateToken, requireAuth, (req, res) => {
     const cardId = req.params.id;
     const { front, back, note } = req.body;
     
-    db.run(`UPDATE cards SET front = ?, back = ?, note = ?, updated_at = CURRENT_TIMESTAMP 
-            WHERE id = ? AND user_id = ?`, 
-        [front, back, note, cardId, req.user.id], 
-        function(err) {
-            if (err) {
-                res.json({ success: false, message: 'Ошибка обновления карточки' });
-            } else if (this.changes === 0) {
-                res.json({ success: false, message: 'Карточка не найдена или доступ запрещен' });
-            } else {
-                res.json({ success: true, message: 'Карточка обновлена!' });
+    if (!front || !back) {
+        return res.json({ success: false, message: 'Термин и объяснение обязательны' });
+    }
+    
+    // Проверяем, что карточка принадлежит пользователю
+    db.get(`SELECT id FROM cards WHERE id = ? AND user_id = ?`, 
+        [cardId, req.user.id], (err, card) => {
+            if (err || !card) {
+                return res.status(404).json({ success: false, message: 'Карточка не найдена' });
             }
-        }
-    );
+            
+            // Обновляем карточку
+            db.run(`UPDATE cards SET front = ?, back = ?, note = ?, updated_at = CURRENT_TIMESTAMP 
+                    WHERE id = ? AND user_id = ?`, 
+                [front, back, note, cardId, req.user.id], 
+                function(err) {
+                    if (err) {
+                        res.json({ success: false, message: 'Ошибка обновления карточки' });
+                    } else if (this.changes === 0) {
+                        res.json({ success: false, message: 'Карточка не найдена' });
+                    } else {
+                        res.json({ success: true, message: 'Карточка обновлена!' });
+                    }
+                });
+        });
 });
 
-// Удаление карточки
-app.delete('/api/cards/:id', authenticateToken, requireAuth, (req, res) => {
-    const cardId = req.params.id;
+// API удаления карточек
+app.delete('/api/cards', authenticateToken, requireAuth, (req, res) => {
+    const { cardIds } = req.body; // Массив ID карточек для удаления
     
-    db.run(`DELETE FROM cards WHERE id = ? AND user_id = ?`, 
-        [cardId, req.user.id], 
-        function(err) {
-            if (err) {
-                res.json({ success: false, message: 'Ошибка удаления карточки' });
-            } else if (this.changes === 0) {
-                res.json({ success: false, message: 'Карточка не найдена или доступ запрещен' });
-            } else {
-                res.json({ success: true, message: 'Карточка удалена!' });
-            }
+    if (!cardIds || !Array.isArray(cardIds) || cardIds.length === 0) {
+        return res.json({ success: false, message: 'Не выбраны карточки для удаления' });
+    }
+    
+    // Создаем placeholders для SQL запроса
+    const placeholders = cardIds.map(() => '?').join(',');
+    const query = `DELETE FROM cards WHERE id IN (${placeholders}) AND user_id = ?`;
+    const params = [...cardIds, req.user.id];
+    
+    db.run(query, params, function(err) {
+        if (err) {
+            res.json({ success: false, message: 'Ошибка удаления карточек' });
+        } else {
+            res.json({ 
+                success: true, 
+                message: `Удалено карточек: ${this.changes}`,
+                deletedCount: this.changes
+            });
         }
-    );
+    });
 });
+
 
 
 app.listen(PORT, HOST, () => {

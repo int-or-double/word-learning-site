@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= set.name %> - Карточки - TrainingCards</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Стили для страницы карточек набора */
+        .set-header {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 3px solid #3498db;
+        }
+        
+        .cards-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .cards-count {
+            font-size: 1.2rem;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .cards-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .cards-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .cards-table th,
+        .cards-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .cards-table th {
+            background-color: #3498db;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .cards-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .cards-table .card-front {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .cards-table .card-back {
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        .cards-table .card-note {
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 0.8rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-icon {
+            min-width: auto;
+            min-height: 35px;
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        /* Модальное окно для карточек */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .close {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #7f8c8d;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .close:hover {
+            color: #2c3e50;
+            background-color: #ecf0f1;
+        }
+        
+        .modal-content h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .form-group.required label:after {
+            content: " *";
+            color: #e74c3c;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .cards-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .cards-table {
+                font-size: 0.9rem;
+            }
+            
+            .cards-table th,
+            .cards-table td {
+                padding: 0.5rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.2rem;
+            }
+            
+            .btn-icon {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .set-header {
+                font-size: 2rem;
+            }
+            
+            .modal-content {
+                padding: 1rem;
+                margin: 1rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .form-actions .btn-universal {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">TrainingCards</div>
+            <div class="nav-links" id="navLinks">
+                <a href="/">Главная</a>
+                <a href="/training">Тренировка</a>
+                <a href="/about">О нас</a>
+                <a href="/contact">Контакты</a>
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <a href="/dashboard" class="btn-universal btn-template-1">Профиль</a>
+                    <a href="/sets" class="btn-universal btn-template-1">Наборы</a>
+                    <a href="/logout" class="btn-universal btn-template-2">Выйти</a>
+                <% } else { %>
+                    <a href="/login" class="btn-universal btn-template-1">Войти</a>
+                    <a href="/register" class="btn-universal btn-template-2">Регистрация</a>
+                <% } %>
+            </div>
+            
+            <div class="burger-menu" id="burgerMenu">
+                <div class="burger-line"></div>
+                <div class="burger-line"></div>
+                <div class="burger-line"></div>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="about-page">
+            <div class="container">
+                <h1 class="set-header"><%= set.name %></h1>
+                
+                <div class="about-content">
+                    <!-- Контролы для карточек -->
+                    <div class="cards-controls">
+                        <div class="cards-count">
+                            Всего карточек: <span id="cardsCount">0</span>
+                        </div>
+                        <div class="cards-actions">
+                            <button class="btn-universal btn-template-1" onclick="showAddCardModal()">
+                                Добавить карточку
+                            </button>
+                            <button class="btn-universal btn-template-2" onclick="deleteSelectedCards()" id="deleteButton" disabled>
+                                Удалить выбранные
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Таблица карточек -->
+                    <div class="table-container">
+                        <table class="cards-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">
+                                        <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                                    </th>
+                                    <th>Термин</th>
+                                    <th>Объяснение</th>
+                                    <th>Справка</th>
+                                    <th style="width: 120px;">Действия</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cardsTableBody">
+                                <!-- Карточки будут загружены сюда -->
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 2rem;">
+                                        <p>Загрузка карточек...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Модальное окно для добавления/редактирования карточки -->
+    <div id="cardModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCardModal()">&times;</span>
+            <h2 id="modalTitle">Добавить карточку</h2>
+            <form id="cardForm">
+                <input type="hidden" id="cardId" value="">
+                <input type="hidden" id="setId" value="<%= set.id %>">
+                
+                <div class="form-group required">
+                    <label for="cardFront">Термин:</label>
+                    <input type="text" id="cardFront" required placeholder="Введите термин">
+                    <small>Обязательное поле</small>
+                </div>
+                
+                <div class="form-group required">
+                    <label for="cardBack">Объяснение:</label>
+                    <textarea id="cardBack" required placeholder="Введите объяснение"></textarea>
+                    <small>Обязательное поле</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="cardNote">Справка:</label>
+                    <textarea id="cardNote" placeholder="Введите дополнительную информацию (необязательно)"></textarea>
+                    <small>Необязательное поле</small>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn-universal btn-template-1">Сохранить</button>
+                    <button type="button" class="btn-universal btn-template-2" onclick="closeCardModal()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Модальное окно подтверждения удаления -->
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDeleteModal()">&times;</span>
+            <h2>Подтверждение удаления</h2>
+            <p>Вы уверены, что хотите удалить <span id="deleteCount">0</span> карточек?</p>
+            <p>Это действие нельзя отменить.</p>
+            <div class="form-actions">
+                <button class="btn-universal btn-template-1" onclick="confirmDelete()">Удалить</button>
+                <button class="btn-universal btn-template-2" onclick="closeDeleteModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>&copy; 2025 TrainingCards. Все права защищены.</p>
+            <div class="footer-links">
+                <a href="/about">О нас</a>
+                <a href="/contact">Контакты</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/burger.js"></script>
+    <script>
+        // Глобальные переменные
+        let selectedCardIds = [];
+        let cardsToDelete = [];
+
+        // Загрузка карточек при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Загрузка страницы карточек набора:', <%= set.id %>);
+            loadCards();
+            
+            // Обработчик формы карточки
+            document.getElementById('cardForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveCard();
+            });
+            
+            // Закрытие модальных окон кликом вне их
+            document.addEventListener('click', function(event) {
+                const cardModal = document.getElementById('cardModal');
+                const deleteModal = document.getElementById('deleteModal');
+                
+                if (cardModal && event.target === cardModal) {
+                    closeCardModal();
+                }
+                
+                if (deleteModal && event.target === deleteModal) {
+                    closeDeleteModal();
+                }
+            });
+            
+            // Закрытие модальных окон клавишей Escape
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape') {
+                    closeCardModal();
+                    closeDeleteModal();
+                }
+            });
+        });
+
+        // Загрузка карточек
+        async function loadCards() {
+            try {
+                console.log('Загрузка карточек набора:', <%= set.id %>);
+                const response = await fetch(`/api/sets/<%= set.id %>/cards`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                console.log('Получены карточки:', result);
+                
+                if (result.success) {
+                    displayCards(result.cards);
+                    document.getElementById('cardsCount').textContent = result.cards.length;
+                } else {
+                    alert('Ошибка загрузки карточек: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки карточек:', error);
+                alert('Произошла ошибка при загрузке карточек: ' + error.message);
+                
+                // Показываем сообщение об ошибке в таблице
+                document.getElementById('cardsTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem; color: #e74c3c;">
+                            <p>Ошибка загрузки карточек. Пожалуйста, обновите страницу.</p>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Отображение карточек в таблице
+        function displayCards(cards) {
+            const tbody = document.getElementById('cardsTableBody');
+            
+            if (cards.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 2rem;">
+                            <p>В этом наборе пока нет карточек.</p>
+                            <p><button class="btn-universal btn-template-1" onclick="showAddCardModal()">Добавить первую карточку</button></p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let html = '';
+            cards.forEach(card => {
+                // Ограничиваем длину текста для отображения
+                const truncatedFront = card.front.length > 50 ? card.front.substring(0, 50) + '...' : card.front;
+                const truncatedBack = card.back.length > 100 ? card.back.substring(0, 100) + '...' : card.back;
+                const truncatedNote = card.note ? (card.note.length > 80 ? card.note.substring(0, 80) + '...' : card.note) : '';
+                
+                html += `
+                    <tr>
+                        <td>
+                            <input type="checkbox" class="card-checkbox" data-id="${card.id}" onchange="updateSelectedCards()">
+                        </td>
+                        <td class="card-front" title="${card.front}">${truncatedFront}</td>
+                        <td class="card-back" title="${card.back}">${truncatedBack}</td>
+                        <td class="card-note" title="${card.note || ''}">${truncatedNote || '-'}</td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-universal btn-template-1 btn-icon" onclick="editCard(${card.id})" title="Редактировать">
+                                    ✏️
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+            updateSelectedCards(); // Обновляем состояние выбора
+        }
+
+        // Показ модального окна добавления карточки
+        function showAddCardModal() {
+            console.log('Открытие модального окна добавления карточки');
+            document.getElementById('modalTitle').textContent = 'Добавить карточку';
+            document.getElementById('cardId').value = '';
+            document.getElementById('cardFront').value = '';
+            document.getElementById('cardBack').value = '';
+            document.getElementById('cardNote').value = '';
+            
+            const modal = document.getElementById('cardModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Редактирование карточки
+        async function editCard(cardId) {
+            console.log('Редактирование карточки:', cardId);
+            try {
+                // Получаем данные карточки
+                const response = await fetch(`/api/sets/<%= set.id %>/cards`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const card = result.cards.find(c => c.id == cardId);
+                    if (card) {
+                        console.log('Найдена карточка для редактирования:', card);
+                        document.getElementById('modalTitle').textContent = 'Редактировать карточку';
+                        document.getElementById('cardId').value = card.id;
+                        document.getElementById('cardFront').value = card.front;
+                        document.getElementById('cardBack').value = card.back;
+                        document.getElementById('cardNote').value = card.note || '';
+                        
+                        const modal = document.getElementById('cardModal');
+                        modal.classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        console.error('Карточка не найдена');
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при загрузке данных карточки');
+            }
+        }
+
+        // Закрытие модального окна карточки
+        function closeCardModal() {
+            console.log('Закрытие модального окна карточки');
+            const modal = document.getElementById('cardModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Сохранение карточки
+        async function saveCard() {
+            const cardId = document.getElementById('cardId').value;
+            const setId = document.getElementById('setId').value;
+            const front = document.getElementById('cardFront').value.trim();
+            const back = document.getElementById('cardBack').value.trim();
+            const note = document.getElementById('cardNote').value.trim();
+            
+            // Валидация
+            if (!front) {
+                alert('Поле "Термин" обязательно для заполнения!');
+                return;
+            }
+            
+            if (!back) {
+                alert('Поле "Объяснение" обязательно для заполнения!');
+                return;
+            }
+            
+            try {
+                const url = cardId ? `/api/cards/${cardId}` : `/api/sets/${setId}/cards`;
+                const method = cardId ? 'PUT' : 'POST';
+                
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ front, back, note })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    closeCardModal();
+                    loadCards(); // Перезагрузить список карточек
+                } else {
+                    alert('Ошибка: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при сохранении карточки');
+            }
+        }
+
+        // Выбор всех карточек
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.card-checkbox');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAll.checked;
+            });
+            
+            updateSelectedCards();
+        }
+
+        // Обновление списка выбранных карточек
+        function updateSelectedCards() {
+            const checkboxes = document.querySelectorAll('.card-checkbox:checked');
+            selectedCardIds = Array.from(checkboxes).map(cb => parseInt(cb.dataset.id));
+            
+            // Обновляем состояние кнопки удаления
+            const deleteButton = document.getElementById('deleteButton');
+            deleteButton.disabled = selectedCardIds.length === 0;
+            deleteButton.textContent = selectedCardIds.length > 0 ? 
+                `Удалить (${selectedCardIds.length})` : 'Удалить выбранные';
+            
+            console.log('Выбрано карточек:', selectedCardIds.length);
+        }
+
+        // Удаление выбранных карточек
+        function deleteSelectedCards() {
+            if (selectedCardIds.length === 0) {
+                alert('Сначала выберите карточки для удаления');
+                return;
+            }
+            
+            cardsToDelete = [...selectedCardIds];
+            document.getElementById('deleteCount').textContent = cardsToDelete.length;
+            
+            const modal = document.getElementById('deleteModal');
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Закрытие модального окна удаления
+        function closeDeleteModal() {
+            console.log('Закрытие модального окна удаления');
+            const modal = document.getElementById('deleteModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Подтверждение удаления
+        async function confirmDelete() {
+            if (cardsToDelete.length === 0) {
+                closeDeleteModal();
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/cards', {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ cardIds: cardsToDelete })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(result.message);
+                    closeDeleteModal();
+                    loadCards(); // Перезагрузить список карточек
+                    
+                    // Сбрасываем выбор
+                    document.getElementById('selectAll').checked = false;
+                    selectedCardIds = [];
+                    updateSelectedCards();
+                } else {
+                    alert('Ошибка: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при удалении карточек');
+            }
+        }
+    </script>
+</body>
+</html>

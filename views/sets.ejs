@@ -5,47 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Мои наборы - TrainingCards</title>
     <link rel="stylesheet" href="/css/style.css">
-    <style>
-        /* Модальное окно - центрированное */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 500px;
-            position: relative;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            max-height: 90vh;
-            overflow-y: auto;
-            margin: auto;
-        }
-        
-        .close {
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
-            font-size: 2rem;
-            cursor: pointer;
-            color: #7f8c8d;
-        }
-        
-        .close:hover {
-            color: #2c3e50;
-        }
-    </style>
 </head>
 <body>
     <header>
@@ -56,14 +15,9 @@
                 <a href="/training">Тренировка</a>
                 <a href="/about">О нас</a>
                 <a href="/contact">Контакты</a>
-                <% if (typeof user !== 'undefined' && user) { %>
-                    <a href="/dashboard" class="btn-universal btn-template-1">Профиль</a>
-                    <a href="/sets" class="btn-universal btn-template-1">Наборы</a>
-                    <a href="/logout" class="btn-universal btn-template-2">Выйти</a>
-                <% } else { %>
-                    <a href="/login" class="btn-universal btn-template-1">Войти</a>
-                    <a href="/register" class="btn-universal btn-template-2">Регистрация</a>
-                <% } %>
+                <a href="/dashboard" class="btn-universal btn-template-1">Профиль</a>
+                <a href="/sets" class="btn-universal btn-template-1">Наборы</a>
+                <a href="/logout" class="btn-universal btn-template-2">Выйти</a>
             </div>
             
             <div class="burger-menu" id="burgerMenu">
@@ -97,7 +51,7 @@
     </main>
 
     <!-- Модальное окно для создания/редактирования набора -->
-    <div id="setModal" class="modal">
+    <div class="modal" id="setModal" style="display: none;">
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="modalTitle">Создать новый набор</h2>
@@ -130,7 +84,6 @@
         </div>
     </div>
 
-
     <footer>
         <div class="footer-content">
             <p>&copy; 2025 TrainingCards. Все права защищены.</p>
@@ -143,92 +96,31 @@
 
     <script src="/js/burger.js"></script>
     <script>
-        // Простые и надежные функции модального окна
-        function showCreateSetModal() {
-            console.log('Открытие модального окна создания набора');
-            document.getElementById('modalTitle').textContent = 'Создать новый набор';
-            document.getElementById('setId').value = '';
-            document.getElementById('setName').value = '';
-            document.getElementById('setDescription').value = '';
-            document.getElementById('setCategory').value = '';
-            
-            const modal = document.getElementById('setModal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeModal() {
-            console.log('Закрытие модального окна');
-            const modal = document.getElementById('setModal');
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-
-        // Редактирование набора
-        async function editSet(setId) {
-            console.log('Редактирование набора:', setId);
-            try {
-                const response = await fetch('/api/sets');
-                const result = await response.json();
-                
-                if (result.success) {
-                    const set = result.sets.find(s => s.id == setId);
-                    if (set) {
-                        console.log('Найден набор для редактирования:', set);
-                        document.getElementById('modalTitle').textContent = 'Редактировать набор';
-                        document.getElementById('setId').value = set.id;
-                        document.getElementById('setName').value = set.name;
-                        document.getElementById('setDescription').value = set.description || '';
-                        document.getElementById('setCategory').value = set.category || '';
-                        
-                        const modal = document.getElementById('setModal');
-                        modal.classList.add('active');
-                        document.body.style.overflow = 'hidden';
-                    } else {
-                        console.error('Набор не найден');
-                    }
-                }
-            } catch (error) {
-                console.error('Ошибка:', error);
-                alert('Произошла ошибка при загрузке данных набора');
-            }
-        }
-
-        // Закрытие модального окна при клике вне его
+        // Загрузка наборов при загрузке страницы
         document.addEventListener('DOMContentLoaded', function() {
-            // Закрытие по клику вне модального окна
-            document.addEventListener('click', function(event) {
-                const modal = document.getElementById('setModal');
-                if (modal && event.target === modal) {
-                    closeModal();
-                }
-            });
+            loadSets();
             
-            // Закрытие по клавише Escape
-            document.addEventListener('keydown', function(event) {
-                if (event.key === 'Escape') {
-                    const modal = document.getElementById('setModal');
-                    if (modal && modal.classList.contains('active')) {
-                        closeModal();
-                    }
-                }
+            // Обработчик формы
+            document.getElementById('setForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                saveSet();
             });
         });
 
-        
-        
         // Загрузка наборов
         async function loadSets() {
             try {
-                console.log('Загрузка наборов...');
+                console.log('Загрузка наборов...'); // Для отладки
+                
                 const response = await fetch('/api/sets');
+                console.log('Статус ответа:', response.status); // Для отладки
                 
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
                 }
                 
                 const result = await response.json();
-                console.log('Получены наборы:', result);
+                console.log('Результат:', result); // Для отладки
                 
                 if (result.success) {
                     displaySets(result.sets);
@@ -263,15 +155,11 @@
                     (set.description.length > 100 ? set.description.substring(0, 100) + '...' : set.description) : 
                     'Без описания';
                 
-                // Формируем текст для кнопки карточек
-                const cardCountText = set.card_count && set.card_count > 0 ? 
-                    `Карточки (${set.card_count})` : 
-                    'Карточки (0)';
-                
                 html += `
                     <div class="set-card">
                         <div class="set-header">
                             <h3 title="${set.name}">${truncatedName}</h3>
+                            <span class="card-count">${set.card_count || 0} карточек</span>
                         </div>
                         <div class="set-description" title="${set.description || 'Без описания'}">
                             ${truncatedDescription}
@@ -287,7 +175,7 @@
                                 Удалить
                             </button>
                             <button class="btn-universal btn-template-1 btn-small" onclick="manageCards(${set.id})" title="Управление карточками">
-                                ${cardCountText}
+                                Карточки
                             </button>
                         </div>
                     </div>
@@ -308,6 +196,39 @@
                 'other': 'Другое'
             };
             return categories[category] || category;
+        }
+
+        // Показ модального окна для создания набора
+        function showCreateSetModal() {
+            document.getElementById('modalTitle').textContent = 'Создать новый набор';
+            document.getElementById('setId').value = '';
+            document.getElementById('setName').value = '';
+            document.getElementById('setDescription').value = '';
+            document.getElementById('setCategory').value = '';
+            document.getElementById('setModal').style.display = 'block';
+        }
+
+        // Редактирование набора
+        async function editSet(setId) {
+            try {
+                const response = await fetch('/api/sets');
+                const result = await response.json();
+                
+                if (result.success) {
+                    const set = result.sets.find(s => s.id == setId);
+                    if (set) {
+                        document.getElementById('modalTitle').textContent = 'Редактировать набор';
+                        document.getElementById('setId').value = set.id;
+                        document.getElementById('setName').value = set.name;
+                        document.getElementById('setDescription').value = set.description || '';
+                        document.getElementById('setCategory').value = set.category || '';
+                        document.getElementById('setModal').style.display = 'block';
+                    }
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                alert('Произошла ошибка при загрузке данных набора');
+            }
         }
 
         // Сохранение набора
@@ -376,7 +297,21 @@
 
         // Управление карточками в наборе
         function manageCards(setId) {
+            // Переход на страницу управления карточками
             window.location.href = `/sets/${setId}/cards`;
+        }
+
+        // Закрытие модального окна
+        function closeModal() {
+            document.getElementById('setModal').style.display = 'none';
+        }
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            const modal = document.getElementById('setModal');
+            if (event.target == modal) {
+                closeModal();
+            }
         }
     </script>
 </body>
