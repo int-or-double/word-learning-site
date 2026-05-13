@@ -149,26 +149,32 @@
             
             let html = '<div class="sets-grid">';
             sets.forEach(set => {
+                // Ограничиваем длину текста для предотвращения переполнения
+                const truncatedName = set.name.length > 50 ? set.name.substring(0, 50) + '...' : set.name;
+                const truncatedDescription = set.description ? 
+                    (set.description.length > 100 ? set.description.substring(0, 100) + '...' : set.description) : 
+                    'Без описания';
+                
                 html += `
                     <div class="set-card">
                         <div class="set-header">
-                            <h3>${set.name}</h3>
+                            <h3 title="${set.name}">${truncatedName}</h3>
                             <span class="card-count">${set.card_count || 0} карточек</span>
                         </div>
-                        <div class="set-description">
-                            ${set.description || 'Без описания'}
+                        <div class="set-description" title="${set.description || 'Без описания'}">
+                            ${truncatedDescription}
                         </div>
                         <div class="set-category">
                             ${set.category ? getCategoryName(set.category) : 'Без категории'}
                         </div>
                         <div class="set-actions">
-                            <button class="btn-universal btn-template-1 btn-small" onclick="editSet(${set.id})">
+                            <button class="btn-universal btn-template-1 btn-small" onclick="editSet(${set.id})" title="Редактировать набор">
                                 Редактировать
                             </button>
-                            <button class="btn-universal btn-template-2 btn-small" onclick="deleteSet(${set.id})">
+                            <button class="btn-universal btn-template-2 btn-small" onclick="deleteSet(${set.id})" title="Удалить набор">
                                 Удалить
                             </button>
-                            <button class="btn-universal btn-template-1 btn-small" onclick="manageCards(${set.id})">
+                            <button class="btn-universal btn-template-1 btn-small" onclick="manageCards(${set.id})" title="Управление карточками">
                                 Карточки
                             </button>
                         </div>
